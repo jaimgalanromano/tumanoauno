@@ -2,630 +2,189 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#7EC8E3" />
   <meta name="description" content="Tu Mano a Uno – Conectá con personas que necesitan o pueden ofrecer ayuda en tu comunidad." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Tu Mano a Uno" />
+  <!-- CSP Security -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://accounts.google.com; frame-src https://accounts.google.com;" />
   <title>Tu Mano a Uno</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Nunito', sans-serif;
-      background: #F5F7FA;
-    }
-
-    /* Pantallas */
-    .screen {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      overflow-y: auto;
-    }
-
-    .screen.active {
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* SPLASH */
-    #splash-screen {
-      background: linear-gradient(135deg, #7EC8E3 0%, #5BA0C0 100%);
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .splash-container {
-      text-align: center;
-      padding: 2rem;
-    }
-
-    .splash-logo-img {
-      width: 120px;
-      height: 120px;
-      object-fit: contain;
-      border-radius: 30px;
-      background: white;
-      padding: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-
-    .splash-container h1 {
-      font-size: 2rem;
-      color: white;
-      margin: 1rem 0 0.5rem;
-    }
-
-    .splash-container p {
-      color: rgba(255,255,255,0.95);
-      margin-bottom: 2rem;
-    }
-
-    .splash-buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      max-width: 280px;
-      margin: 0 auto;
-    }
-
-    .btn-splash-google {
-      background: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 50px;
-      font-size: 1rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      cursor: pointer;
-    }
-
-    .btn-splash-guest {
-      background: transparent;
-      border: 2px solid white;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 50px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    /* APP SCREEN */
-    #app-screen {
-      background: #F5F7FA;
-    }
-
-    .app-header {
-      background: white;
-      padding: 12px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-
-    .header-logo {
-      width: 36px;
-      height: 36px;
-      object-fit: contain;
-    }
-
-    .header-logo-fallback {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: #4A90A4;
-    }
-
-    .btn-donar {
-      background: #FF6B6B;
-      color: white;
-      border: none;
-      padding: 6px 14px;
-      border-radius: 50px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-    }
-
-    .user-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #7EC8E3;
-      cursor: pointer;
-    }
-
-    .city-bar {
-      background: white;
-      padding: 8px 16px;
-      display: flex;
-      justify-content: space-between;
-      border-bottom: 1px solid #E5E7EB;
-      font-size: 0.85rem;
-    }
-
-    .map-container {
-      flex: 1;
-      width: 100%;
-      height: 65vh;
-      background: #e0e0e0;
-    }
-
-    .map-zoom-controls {
-      position: fixed;
-      bottom: 100px;
-      right: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      z-index: 400;
-    }
-
-    .zoom-btn {
-      width: 44px;
-      height: 44px;
-      background: white;
-      border: none;
-      border-radius: 50%;
-      font-size: 24px;
-      font-weight: bold;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      cursor: pointer;
-    }
-
-    .fab {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #7EC8E3;
-      color: white;
-      border: none;
-      padding: 14px 24px;
-      border-radius: 50px;
-      font-size: 1rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-      cursor: pointer;
-      z-index: 400;
-      font-family: inherit;
-    }
-
-    /* Modales */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    }
-
-    .modal-overlay.hidden {
-      display: none;
-    }
-
-    .modal-container {
-      background: white;
-      border-radius: 24px;
-      width: 90%;
-      max-width: 500px;
-      max-height: 90vh;
-      overflow-y: auto;
-      padding: 20px;
-      position: relative;
-    }
-
-    .modal-close {
-      position: absolute;
-      top: 12px;
-      right: 16px;
-      font-size: 28px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #999;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    .form-label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-
-    .toggle-switch {
-      display: flex;
-      gap: 10px;
-    }
-
-    .toggle-option {
-      flex: 1;
-      padding: 10px;
-      border: 1px solid #ddd;
-      background: white;
-      border-radius: 50px;
-      cursor: pointer;
-    }
-
-    .toggle-option.active {
-      background: #7EC8E3;
-      color: white;
-      border-color: #7EC8E3;
-    }
-
-    .form-textarea, .form-input {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      font-family: inherit;
-    }
-
-    .btn-publicar {
-      width: 100%;
-      padding: 14px;
-      background: #7EC8E3;
-      color: white;
-      border: none;
-      border-radius: 50px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #333;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 50px;
-      z-index: 1100;
-      font-size: 0.85rem;
-    }
-
-    .toast.hidden {
-      display: none;
-    }
-
-    .card-detail {
-      padding: 8px;
-    }
-
-    .card-detail h3 {
-      margin-bottom: 12px;
-      color: #333;
-    }
-
-    .card-detail p {
-      margin: 8px 0;
-      line-height: 1.5;
-    }
-
-    .card-contact-btn {
-      background: #25D366;
-      color: white;
-      border: none;
-      padding: 12px;
-      border-radius: 50px;
-      width: 100%;
-      font-weight: 700;
-      margin-top: 16px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .login-warning {
-      background: #FFF3CD;
-      border: 1px solid #FFEeba;
-      padding: 12px;
-      border-radius: 12px;
-      margin-bottom: 16px;
-      text-align: center;
-    }
-  </style>
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
 
-  <!-- SPLASH -->
-  <div id="splash-screen" class="screen active">
-    <div class="splash-container">
-      <img src="https://via.placeholder.com/120x120/FFFFFF/7EC8E3?text=🤝" alt="Logo" class="splash-logo-img" />
-      <h1>Tu Mano a Uno</h1>
-      <p>Conectá con tu comunidad.<br>Ofrecé o pedí ayuda cerca tuyo.</p>
-      <div class="splash-buttons">
-        <button id="splash-google-btn" class="btn-splash-google">
-          <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-          Iniciar sesión con Google
-        </button>
-        <button id="splash-guest-btn" class="btn-splash-guest">
-          Explorar como invitado
-        </button>
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen" class="screen active">
+    <div class="login-container">
+      <div class="login-logo">
+        <img src="icons/logo.png" alt="Tu Mano a Uno" class="login-logo-img" onerror="this.style.display='none'; document.getElementById('login-logo-fallback').style.display='block'" />
+        <div id="login-logo-fallback" class="login-logo-fallback" style="display:none">
+          <span class="logo-hand">🤝</span>
+        </div>
+        <h1>Tu Mano a Uno</h1>
+        <p>Conectá con tu comunidad.<br>Ofrecé o pedí ayuda cerca tuyo.</p>
       </div>
+      <button id="btn-google-login" class="btn-google">
+        <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+        Continuar con Google
+      </button>
+      <p class="login-disclaimer">Al ingresar aceptás los <a href="#" id="link-terms">términos de uso</a>. Tus datos están protegidos y no se comparten con terceros.</p>
     </div>
   </div>
 
-  <!-- APP -->
+  <!-- MAIN APP -->
   <div id="app-screen" class="screen">
+
+    <!-- HEADER -->
     <header class="app-header">
       <div class="header-left">
-        <span class="header-logo-fallback">🤝 Tu Mano a Uno</span>
+        <img src="icons/logo.png" alt="Tu Mano a Uno" class="header-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'" />
+        <span class="header-logo-fallback" style="display:none">🤝 Tu Mano a Uno</span>
       </div>
       <div class="header-right">
-        <button id="btn-donar" class="btn-donar">❤️ Donar</button>
-        <div id="user-avatar-wrap">
-          <img id="user-avatar" src="" alt="Avatar" class="user-avatar" style="display:none" />
+        <button id="btn-donar" class="btn-donar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+          Donar
+        </button>
+        <div id="user-avatar-wrap" class="user-avatar-wrap">
+          <img id="user-avatar" src="" alt="Tu foto" class="user-avatar" />
+          <div id="user-menu" class="user-menu hidden">
+            <div id="user-menu-name" class="user-menu-name"></div>
+            <button id="btn-logout" class="user-menu-logout">Cerrar sesión</button>
+          </div>
         </div>
       </div>
     </header>
 
+    <!-- CITY BAR -->
     <div class="city-bar">
-      <span id="city-label">📍 Buenos Aires</span>
-      <select id="city-select">
-        <option>Buenos Aires</option>
-        <option>Córdoba</option>
-        <option>Rosario</option>
-        <option>Mendoza</option>
-      </select>
+      <span id="city-label" class="city-label">Cargando tu ubicación…</span>
+      <div class="city-controls">
+        <select id="city-select" class="city-select" aria-label="Cambiar ciudad">
+          <option value="">Tu ciudad</option>
+        </select>
+      </div>
     </div>
 
-    <div id="map" class="map-container"></div>
+    <!-- MAP -->
+    <div id="map" class="map-container" aria-label="Mapa de pedidos y ofrecimientos cercanos"></div>
 
+    <!-- ZOOM CONTROLS (custom) -->
     <div class="map-zoom-controls">
-      <button id="zoom-in" class="zoom-btn">+</button>
-      <button id="zoom-out" class="zoom-btn">−</button>
+      <button id="zoom-in" class="zoom-btn" aria-label="Acercar">+</button>
+      <button id="zoom-out" class="zoom-btn" aria-label="Alejar">−</button>
     </div>
 
-    <button id="btn-fab" class="fab">
-      <span>+</span>
+    <!-- FAB -->
+    <button id="btn-fab" class="fab" aria-label="Ofrecé o solicitá ayuda">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       <span>Ofrecé o solicitá aquí</span>
     </button>
+
   </div>
 
   <!-- FORM MODAL -->
-  <div id="form-modal" class="modal-overlay hidden">
+  <div id="form-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="form-modal-title">
     <div class="modal-container">
-      <button class="modal-close" id="modal-close-btn">×</button>
-      <h2>Nueva publicación</h2>
-      <div id="login-warning" class="login-warning" style="display:none">
-        ⚠️ Necesitás iniciar sesión para publicar
+      <button class="modal-close" id="modal-close-btn" aria-label="Cerrar">×</button>
+      <h2 id="form-modal-title">Nueva publicación</h2>
+
+      <div class="form-user-info">
+        <img id="form-user-photo" src="" alt="" class="form-user-photo" />
+        <span id="form-user-name" class="form-user-name"></span>
       </div>
+
       <div class="form-group">
         <label class="form-label">¿Qué querés hacer?</label>
-        <div class="toggle-switch">
-          <button class="toggle-option active" data-type="ofrezco">Ofrezco</button>
-          <button class="toggle-option" data-type="necesito">Necesito</button>
+        <div class="toggle-switch" role="group" aria-label="Tipo de publicación">
+          <button class="toggle-option active" data-value="ofrezco" id="toggle-ofrezco">Ofrezco</button>
+          <button class="toggle-option" data-value="necesito" id="toggle-necesito">Necesito</button>
         </div>
       </div>
+
       <div class="form-group">
-        <label class="form-label">Descripción</label>
-        <textarea id="form-descripcion" class="form-textarea" rows="4" placeholder="Describí lo que ofrecés o necesitás..."></textarea>
+        <label class="form-label">Tipo</label>
+        <div class="toggle-switch" role="group" aria-label="Tipo de ayuda">
+          <button class="toggle-option active" data-value="producto" id="toggle-producto">Producto</button>
+          <button class="toggle-option" data-value="servicio" id="toggle-servicio">Servicio</button>
+        </div>
       </div>
+
       <div class="form-group">
-        <label class="form-label">Celular (WhatsApp)</label>
-        <input type="tel" id="form-celular" class="form-input" placeholder="1137881082" />
+        <label class="form-label" for="form-descripcion">Descripción <span id="char-count" class="char-count">0/300</span></label>
+        <textarea id="form-descripcion" class="form-textarea" placeholder="Describí brevemente lo que ofrecés o necesitás…" maxlength="300" rows="4"></textarea>
       </div>
-      <button id="btn-publicar" class="btn-publicar">Publicar</button>
+
+      <div class="form-group">
+        <label class="form-label" for="form-celular">Celular (WhatsApp)</label>
+        <div class="input-phone-wrap">
+          <span class="phone-prefix">+54</span>
+          <input type="tel" id="form-celular" class="form-input phone-input" placeholder="1137881082" maxlength="14" pattern="[0-9]+" inputmode="numeric" />
+        </div>
+        <p class="form-hint">Sin 0, sin 15. Ejemplo: 1137881082</p>
+      </div>
+
+      <div id="location-status" class="location-status">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="location-text">Obteniendo tu ubicación…</span>
+      </div>
+
+      <button id="btn-publicar" class="btn-publicar" disabled>
+        <span id="btn-publicar-text">Publicar</span>
+        <svg id="btn-publicar-spinner" class="spinner hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      </button>
     </div>
   </div>
 
-  <!-- DETAIL MODAL -->
-  <div id="card-modal" class="modal-overlay hidden">
-    <div class="modal-container">
-      <button class="modal-close" id="card-modal-close">×</button>
+  <!-- CARD DETAIL MODAL -->
+  <div id="card-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="card-modal-title">
+    <div class="modal-container modal-card-detail">
+      <button class="modal-close" id="card-modal-close" aria-label="Cerrar">×</button>
       <div id="card-modal-content"></div>
     </div>
   </div>
 
-  <div id="toast" class="toast hidden"></div>
+  <!-- DONAR MODAL -->
+  <div id="donar-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="donar-modal-title">
+    <div class="modal-container modal-donar">
+      <button class="modal-close" id="donar-modal-close" aria-label="Cerrar">×</button>
+      <div class="donar-content">
+        <div class="donar-heart">💙</div>
+        <h2 id="donar-modal-title">¡Gracias por considerar donar!</h2>
+        <p>Tu ayuda nos permite mantener este proyecto vivo y gratuito para toda la comunidad.</p>
+        <div class="cvu-box">
+          <span class="cvu-label">CVU</span>
+          <span class="cvu-value" id="cvu-value">0000003100040849915686</span>
+          <button id="btn-copy-cvu" class="btn-copy-cvu" aria-label="Copiar CVU">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span id="cvu-copy-text">Copiar</span>
+          </button>
+        </div>
+        <p class="donar-alias">Alias: <strong>tumanoauno.donacion</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast hidden" role="alert" aria-live="polite"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script>
-    // ========== DATOS DE EJEMPLO ==========
-    const publicaciones = [
-      { id: 1, tipo: 'ofrezco', descripcion: 'Ayudo con compras del supermercado', celular: '1137881082', lat: -34.6037, lng: -58.3816, nombre: 'Carlos' },
-      { id: 2, tipo: 'necesito', descripcion: 'Preciso alimento para mi mascota', celular: '1155667788', lat: -34.6137, lng: -58.3716, nombre: 'Lucía' },
-      { id: 3, tipo: 'ofrezco', descripcion: 'Doy clases de matemáticas gratis', celular: '1122334455', lat: -34.5937, lng: -58.3916, nombre: 'Martín' },
-      { id: 4, tipo: 'necesito', descripcion: 'Busco donación de ropa de invierno', celular: '1199887766', lat: -34.6237, lng: -58.4016, nombre: 'Ana' },
-      { id: 5, tipo: 'ofrezco', descripcion: 'Reparto viandas los viernes', celular: '1144556677', lat: -34.5837, lng: -58.3616, nombre: 'Pedro' }
-    ];
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/app.js"></script>
 
-    let map;
-    let markers = [];
-    let isLoggedIn = false;
-    let currentUser = null;
-
-    // Mostrar toast
-    function showToast(msg, isError = false) {
-      const toast = document.getElementById('toast');
-      toast.textContent = msg;
-      toast.style.background = isError ? '#e74c3c' : '#333';
-      toast.classList.remove('hidden');
-      setTimeout(() => toast.classList.add('hidden'), 3000);
-    }
-
-    // Inicializar mapa
-    function initMap() {
-      map = L.map('map').setView([-34.6037, -58.3816], 13);
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
-      }).addTo(map);
-      cargarMarcadores();
-    }
-
-    // Cargar marcadores
-    function cargarMarcadores() {
-      markers.forEach(m => map.removeLayer(m));
-      markers = [];
-      publicaciones.forEach(pub => {
-        const icon = L.divIcon({
-          html: `<div style="background:${pub.tipo === 'ofrezco' ? '#4CAF50' : '#FF9800'}; width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:18px;box-shadow:0 2px 5px rgba(0,0,0,0.2)">${pub.tipo === 'ofrezco' ? '🙌' : '👐'}</div>`,
-          iconSize: [28, 28],
-          className: 'custom-marker'
-        });
-        const marker = L.marker([pub.lat, pub.lng], { icon }).addTo(map);
-        marker.bindPopup(`
-          <strong>${pub.tipo === 'ofrezco' ? '🙌 Ofrece' : '🫱 Necesita'}</strong><br>
-          ${pub.descripcion.substring(0, 80)}${pub.descripcion.length > 80 ? '...' : ''}<br>
-          <button onclick="verDetalle(${pub.id})" style="margin-top:8px;padding:4px 12px;background:#7EC8E3;border:none;border-radius:20px;cursor:pointer">Ver más</button>
-        `);
-        marker.pubId = pub.id;
-        markers.push(marker);
-      });
-    }
-
-    // Ver detalle
-    window.verDetalle = function(id) {
-      const pub = publicaciones.find(p => p.id === id);
-      if (!pub) return;
-      const content = `
-        <div class="card-detail">
-          <h3>${pub.tipo === 'ofrezco' ? '🙌 Ofrece ayuda' : '🫱 Necesita ayuda'}</h3>
-          <p><strong>Descripción:</strong> ${pub.descripcion}</p>
-          <p><strong>Publicado por:</strong> ${pub.nombre}</p>
-          ${isLoggedIn ? 
-            `<button class="card-contact-btn" onclick="contactar('${pub.celular}', '${pub.descripcion}')">
-              📱 Contactar por WhatsApp
-            </button>` : 
-            `<button class="card-contact-btn" onclick="showToast('Iniciá sesión para ver el contacto', true)" style="background:#ccc">
-              🔒 Iniciá sesión para contactar
-            </button>`
-          }
-        </div>
-      `;
-      document.getElementById('card-modal-content').innerHTML = content;
-      document.getElementById('card-modal').classList.remove('hidden');
-    };
-
-    window.contactar = function(celular, mensaje) {
-      if (!isLoggedIn) {
-        showToast('Necesitás iniciar sesión para contactar', true);
-        return;
-      }
-      const texto = `Hola! Vi tu publicación en Tu Mano a Uno: "${mensaje.substring(0, 100)}". Me interesaría contactarme.`;
-      window.open(`https://wa.me/54${celular}?text=${encodeURIComponent(texto)}`, '_blank');
-    };
-
-    // Cambiar pantalla
-    function showScreen(screenId) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(screenId).classList.add('active');
-      if (screenId === 'app-screen' && !map) {
-        initMap();
-      }
-    }
-
-    // Login simulado
-    function doLogin() {
-      isLoggedIn = true;
-      currentUser = { name: 'Usuario', photo: null };
-      const avatar = document.getElementById('user-avatar');
-      avatar.style.display = 'block';
-      avatar.src = 'https://ui-avatars.com/api/?background=7EC8E3&color=fff&name=U';
-      showToast('✅ Sesión iniciada correctamente');
-    }
-
-    // Eventos
-    document.getElementById('splash-google-btn').onclick = () => {
-      doLogin();
-      showScreen('app-screen');
-    };
-    document.getElementById('splash-guest-btn').onclick = () => {
-      showScreen('app-screen');
-    };
-
-    document.getElementById('btn-fab').onclick = () => {
-      if (!isLoggedIn) {
-        document.getElementById('login-warning').style.display = 'block';
-        showToast('Necesitás iniciar sesión para publicar', true);
-      } else {
-        document.getElementById('login-warning').style.display = 'none';
-      }
-      document.getElementById('form-modal').classList.remove('hidden');
-    };
-
-    document.getElementById('btn-publicar').onclick = () => {
-      if (!isLoggedIn) {
-        showToast('Iniciá sesión para publicar', true);
-        return;
-      }
-      const descripcion = document.getElementById('form-descripcion').value;
-      const celular = document.getElementById('form-celular').value;
-      if (!descripcion || !celular) {
-        showToast('Completá todos los campos', true);
-        return;
-      }
-      showToast('📢 Publicación simulada (demo)');
-      document.getElementById('form-modal').classList.add('hidden');
-      document.getElementById('form-descripcion').value = '';
-      document.getElementById('form-celular').value = '';
-    };
-
-    document.getElementById('btn-donar').onclick = () => {
-      showToast('💙 Gracias por tu interés en donar (demo)');
-    };
-
-    document.querySelectorAll('.modal-close, #card-modal-close').forEach(btn => {
-      btn.onclick = () => {
-        document.querySelectorAll('.modal-overlay').forEach(m => m.classList.add('hidden'));
-      };
-    });
-
-    document.getElementById('zoom-in').onclick = () => map?.zoomIn();
-    document.getElementById('zoom-out').onclick = () => map?.zoomOut();
-
-    // Cerrar modales click fuera
-    document.querySelectorAll('.modal-overlay').forEach(overlay => {
-      overlay.onclick = (e) => {
-        if (e.target === overlay) overlay.classList.add('hidden');
-      };
-    });
-
-    // Toggle switches
-    document.querySelectorAll('.toggle-option').forEach(btn => {
-      btn.onclick = function() {
-        this.parentElement.querySelectorAll('.toggle-option').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-      };
-    });
-
-    // Si hay mapa, iniciar
-    if (document.getElementById('app-screen').classList.contains('active')) {
-      initMap();
-    }
-  </script>
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </body>
 </html>
