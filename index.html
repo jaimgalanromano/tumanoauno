@@ -3,723 +3,1627 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#7EC8E3" />
+  <meta name="theme-color" content="#5BABCC" />
   <meta name="description" content="Tu Mano a Uno – Conectá con personas que necesitan o pueden ofrecer ayuda en tu comunidad." />
-  <title>Tu Mano a Uno | Ayuda en tu comunidad</title>
-  <!-- Leaflet CSS -->
+  <title>Tu Mano a Uno</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
-  <!-- Google Identity Services -->
-
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    /* ─── TOKENS ─────────────────────────────────────────────── */
+    :root {
+      --blue:       #5BABCC;
+      --blue-dark:  #2C7DA0;
+      --blue-light: #D6EFF7;
+      --blue-xlight:#EEF7FC;
+      --orange:     #E8873C;
+      --orange-light:#FFF0E4;
+      --green:      #3CB87A;
+      --green-light:#E3F7EC;
+      --red:        #E05252;
+      --red-light:  #FDEAEA;
+      --gray-900:   #1A2332;
+      --gray-700:   #3D4F63;
+      --gray-500:   #6B7E94;
+      --gray-300:   #C4D0DC;
+      --gray-100:   #F0F4F8;
+      --gray-50:    #F8FAFB;
+      --white:      #FFFFFF;
+      --shadow-sm:  0 1px 4px rgba(0,0,0,0.08);
+      --shadow-md:  0 4px 16px rgba(0,0,0,0.10);
+      --shadow-lg:  0 8px 32px rgba(0,0,0,0.14);
+      --radius-sm:  10px;
+      --radius-md:  18px;
+      --radius-lg:  28px;
+      --radius-xl:  40px;
+      --transition: 200ms cubic-bezier(0.4,0,0.2,1);
     }
+
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
     body {
-      font-family: 'Inter', sans-serif;
-      background: #F4F7FC;
-      height: 100vh;
-      overflow: hidden;
-      color: #1E2F3E;
+      font-family:'Nunito', sans-serif;
+      background:var(--gray-100);
+      height:100dvh;
+      overflow:hidden;
+      color:var(--gray-900);
     }
 
-    /* MAIN APP SCREEN (siempre visible) */
-    .app-main {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      width: 100%;
+    /* ─── LAYOUT ─────────────────────────────────────────────── */
+    .app {
+      display:flex;
+      flex-direction:column;
+      height:100dvh;
+      position:relative;
     }
 
-    /* HEADER */
-    .app-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: white;
-      padding: 12px 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      z-index: 10;
-      border-bottom: 1px solid #E2E8F0;
+    /* ─── HEADER ──────────────────────────────────────────────── */
+    .header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      background:var(--white);
+      padding:10px 16px;
+      border-bottom:1px solid rgba(0,0,0,0.06);
+      box-shadow:var(--shadow-sm);
+      z-index:20;
+      flex-shrink:0;
     }
-    .logo-area {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    .logo {
+      display:flex;
+      align-items:center;
+      gap:9px;
     }
     .logo-icon {
-      background: #7EC8E3;
-      width: 38px;
-      height: 38px;
-      border-radius: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      width:36px; height:36px;
+      background:linear-gradient(135deg, var(--blue), var(--blue-dark));
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:18px;
+      box-shadow:0 2px 8px rgba(44,125,160,0.3);
     }
-    .logo-text {
-      font-weight: 800;
-      font-size: 1.3rem;
-      background: linear-gradient(135deg, #2C7DA0, #61A5C2);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+    .logo-name {
+      font-weight:900;
+      font-size:1.05rem;
+      color:var(--blue-dark);
+      letter-spacing:-0.3px;
     }
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 15px;
+    .logo-name span { color:var(--blue); }
+    .header-right {
+      display:flex;
+      align-items:center;
+      gap:10px;
     }
-    .btn--sm {
-      background: #FFE9D6;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 40px;
-      font-weight: 600;
-      font-size: 0.8rem;
-      color: #C76E1C;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      transition: all 0.2s;
+    .btn-donate {
+      background:var(--orange-light);
+      border:none;
+      padding:7px 13px;
+      border-radius:var(--radius-xl);
+      font-weight:700;
+      font-size:0.78rem;
+      color:var(--orange);
+      display:flex;
+      align-items:center;
+      gap:5px;
+      cursor:pointer;
+      transition:background var(--transition), transform var(--transition);
+      font-family:inherit;
     }
-    .btn--sm:hover { background: #FFDDBB; }
-    .user-area {
-      position: relative;
-      cursor: pointer;
+    .btn-donate:hover { background:#fde0c5; transform:scale(1.03); }
+    .avatar-wrap {
+      position:relative;
+      cursor:pointer;
     }
-    .user-avatar {
-      width: 42px;
-      height: 42px;
-      border-radius: 100%;
-      object-fit: cover;
-      border: 2px solid #7EC8E3;
-      background: #F0F4F8;
+    .avatar {
+      width:38px; height:38px;
+      border-radius:50%;
+      object-fit:cover;
+      border:2.5px solid var(--blue);
+      display:block;
+      background:var(--gray-100);
+      transition:border-color var(--transition);
     }
-    .user-menu {
-      position: absolute;
-      right: 0;
-      top: 50px;
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
-      width: 200px;
-      padding: 12px;
-      z-index: 200;
-      border: 1px solid #E2E8F0;
+    .avatar-wrap:hover .avatar { border-color:var(--blue-dark); }
+    .user-dot {
+      position:absolute;
+      bottom:1px; right:1px;
+      width:9px; height:9px;
+      background:var(--green);
+      border-radius:50%;
+      border:2px solid white;
+      display:none;
     }
-    .user-menu.hidden { display: none; }
-    .user-menu-name {
-      font-weight: 600;
-      border-bottom: 1px solid #EDF2F7;
-      padding-bottom: 8px;
-      margin-bottom: 8px;
+    .user-dot.visible { display:block; }
+    .dropdown {
+      position:absolute;
+      right:0; top:48px;
+      background:var(--white);
+      border-radius:var(--radius-md);
+      box-shadow:var(--shadow-lg);
+      width:210px;
+      padding:10px;
+      z-index:400;
+      border:1px solid var(--gray-100);
+      animation:fadeDown 0.15s ease;
     }
-    .logout-btn {
-      background: none;
-      border: none;
-      color: #E53E3E;
-      font-weight: 500;
-      width: 100%;
-      text-align: left;
-      padding: 8px;
-      border-radius: 12px;
-      cursor: pointer;
+    .dropdown.hidden { display:none; }
+    @keyframes fadeDown {
+      from { opacity:0; transform:translateY(-6px); }
+      to   { opacity:1; transform:translateY(0); }
     }
-    .logout-btn:hover { background: #FFF5F5; }
+    .dropdown-name {
+      font-weight:700;
+      font-size:0.85rem;
+      padding:6px 8px 10px;
+      border-bottom:1px solid var(--gray-100);
+      margin-bottom:6px;
+      color:var(--gray-700);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .dropdown-btn {
+      background:none; border:none;
+      color:var(--red); font-weight:600;
+      font-size:0.82rem;
+      font-family:inherit;
+      width:100%; text-align:left;
+      padding:8px 8px;
+      border-radius:var(--radius-sm);
+      cursor:pointer;
+      transition:background var(--transition);
+    }
+    .dropdown-btn:hover { background:var(--red-light); }
+    .login-btn {
+      background:var(--blue-dark);
+      color:white; font-weight:700;
+      font-size:0.82rem;
+      font-family:inherit;
+      width:100%; text-align:center;
+      padding:9px 8px;
+      border:none;
+      border-radius:var(--radius-sm);
+      cursor:pointer;
+      transition:background var(--transition);
+    }
+    .login-btn:hover { background:var(--blue); }
 
-    /* CITY BAR */
+    /* ─── MAP AREA ────────────────────────────────────────────── */
+    .map-wrap {
+      flex:1;
+      position:relative;
+      overflow:hidden;
+    }
+    #map {
+      position:absolute;
+      inset:0;
+      z-index:1;
+    }
+
+    /* ─── CITY BAR (over map) ─────────────────────────────────── */
     .city-bar {
-      background: #FFFFFFCC;
-      backdrop-filter: blur(8px);
-      margin: 10px 16px;
-      padding: 15px 16px;
-      border-radius: 60px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: absolute;
-      top: 70px;
-      left: 0;
-      right: 0;
-      z-index: 2;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      pointer-events: auto;
+      position:absolute;
+      top:12px; left:12px; right:12px;
+      z-index:10;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      background:rgba(255,255,255,0.92);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      padding:8px 12px;
+      border-radius:var(--radius-xl);
+      box-shadow:var(--shadow-md);
+      border:1px solid rgba(255,255,255,0.8);
     }
+    .city-icon { font-size:1rem; flex-shrink:0; }
     .city-label {
-      font-weight: 600;
-      font-size: 0.85rem;
-      background: #F1F5F9;
-      padding: 4px 12px;
-      border-radius: 30px;
+      font-weight:700;
+      font-size:0.82rem;
+      color:var(--gray-700);
+      flex:1;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
-    .city-select {
-      background: transparent;
-      border: none;
-      font-weight: 500;
-      font-size: 0.8rem;
-      padding: 6px;
-      border-radius: 20px;
+    .city-divider {
+      width:1px; height:16px;
+      background:var(--gray-300);
+      flex-shrink:0;
+    }
+    .city-select-btn {
+      background:none;
+      border:none;
+      font-family:inherit;
+      font-size:0.78rem;
+      font-weight:700;
+      color:var(--blue-dark);
+      cursor:pointer;
+      padding:2px 4px;
+      border-radius:8px;
+      white-space:nowrap;
+      flex-shrink:0;
+      transition:color var(--transition);
+    }
+    .city-select-btn:hover { color:var(--blue); }
+
+    /* City picker panel */
+    .city-picker {
+      position:absolute;
+      top:60px; left:12px; right:12px;
+      z-index:20;
+      background:white;
+      border-radius:var(--radius-lg);
+      box-shadow:var(--shadow-lg);
+      padding:16px;
+      animation:fadeDown 0.15s ease;
+    }
+    .city-picker.hidden { display:none; }
+    .city-picker-title {
+      font-weight:800;
+      font-size:0.88rem;
+      color:var(--gray-700);
+      margin-bottom:12px;
+    }
+    .city-grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+    }
+    .city-option {
+      background:var(--gray-50);
+      border:2px solid transparent;
+      border-radius:var(--radius-md);
+      padding:10px 12px;
+      cursor:pointer;
+      font-family:inherit;
+      font-size:0.82rem;
+      font-weight:700;
+      color:var(--gray-700);
+      text-align:left;
+      transition:all var(--transition);
+    }
+    .city-option:hover, .city-option.active {
+      background:var(--blue-xlight);
+      border-color:var(--blue);
+      color:var(--blue-dark);
+    }
+    .city-option .city-opt-name { display:block; }
+    .city-option .city-opt-sub {
+      display:block;
+      font-weight:500;
+      font-size:0.72rem;
+      color:var(--gray-500);
+      margin-top:1px;
     }
 
-    /* MAP */
-    .map-container {
-      flex: 1;
-      width: 100%;
-      z-index: 1;
+    /* ─── ZOOM SLIDER ─────────────────────────────────────────── */
+    .zoom-control {
+      position:absolute;
+      bottom:90px; right:14px;
+      z-index:10;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:6px;
+      background:rgba(255,255,255,0.92);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      border-radius:var(--radius-xl);
+      padding:10px 7px;
+      box-shadow:var(--shadow-md);
+      border:1px solid rgba(255,255,255,0.8);
     }
-    .custom-zoom {
-      position: absolute;
-      bottom: 100px;
-      right: 16px;
-      z-index: 500;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    .zoom-icon-btn {
+      background:none; border:none;
+      cursor:pointer;
+      width:28px; height:28px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:18px;
+      color:var(--gray-700);
+      border-radius:8px;
+      transition:background var(--transition);
+      font-weight:800;
+      line-height:1;
     }
-    .zoom-btn {
-      background: white;
-      border: none;
-      width: 44px;
-      height: 44px;
-      border-radius: 40px;
-      font-size: 24px;
-      font-weight: bold;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-      cursor: pointer;
-      transition: 0.1s;
+    .zoom-icon-btn:hover { background:var(--gray-100); }
+    .zoom-slider-wrap {
+      position:relative;
+      height:90px;
+      width:24px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
+    .zoom-track {
+      position:absolute;
+      left:50%; transform:translateX(-50%);
+      width:4px;
+      height:90px;
+      background:var(--gray-100);
+      border-radius:4px;
+      overflow:hidden;
+    }
+    .zoom-fill {
+      position:absolute;
+      bottom:0; left:0; right:0;
+      background:linear-gradient(to top, var(--blue-dark), var(--blue));
+      border-radius:4px;
+      transition:height 0.1s ease;
+    }
+    .zoom-thumb-input {
+      -webkit-appearance:none;
+      appearance:none;
+      writing-mode:vertical-lr;
+      direction:rtl;
+      width:90px; height:24px;
+      background:transparent;
+      cursor:pointer;
+      transform:rotate(-90deg);
+      position:absolute;
+      margin:0;
+      z-index:2;
+    }
+    .zoom-thumb-input::-webkit-slider-thumb {
+      -webkit-appearance:none;
+      width:18px; height:18px;
+      border-radius:50%;
+      background:var(--white);
+      border:2.5px solid var(--blue-dark);
+      box-shadow:0 1px 4px rgba(0,0,0,0.18);
+      cursor:pointer;
+      transition:border-color var(--transition);
+    }
+    .zoom-thumb-input::-webkit-slider-runnable-track { background:transparent; }
+    .zoom-thumb-input::-moz-range-thumb {
+      width:18px; height:18px;
+      border-radius:50%;
+      background:var(--white);
+      border:2.5px solid var(--blue-dark);
+      box-shadow:0 1px 4px rgba(0,0,0,0.18);
+      cursor:pointer;
+    }
+
+    /* ─── FAB ─────────────────────────────────────────────────── */
     .fab {
-      position: absolute;
-      bottom: 24px;
-      left: 20px;
-      right: 20px;
-      background: #2C7DA0;
-      border: none;
-      padding: 14px;
-      border-radius: 60px;
-      color: white;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      font-size: 1rem;
-      box-shadow: 0 4px 15px rgba(44,125,160,0.4);
-      z-index: 30;
-      cursor: pointer;
+      position:absolute;
+      bottom:16px; left:16px; right:16px;
+      z-index:10;
+      background:linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 100%);
+      border:none;
+      border-radius:var(--radius-xl);
+      padding:15px 20px;
+      color:white;
+      font-family:inherit;
+      font-weight:800;
+      font-size:0.95rem;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      box-shadow:0 4px 18px rgba(44,125,160,0.45);
+      cursor:pointer;
+      transition:transform var(--transition), box-shadow var(--transition);
+      letter-spacing:0.1px;
     }
+    .fab:hover { transform:translateY(-1px); box-shadow:0 6px 24px rgba(44,125,160,0.5); }
+    .fab:active { transform:translateY(0); }
 
-    /* MODALES */
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-      backdrop-filter: blur(3px);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    /* ─── MAP MARKERS ─────────────────────────────────────────── */
+    .custom-div-icon { background:transparent; border:none; }
+    .cm {
+      width:38px; height:38px;
+      border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:18px;
+      border:2.5px solid white;
+      box-shadow:0 2px 8px rgba(0,0,0,0.2);
     }
-    .hidden { display: none; }
-    .modal-container {
-      background: white;
-      width: 90%;
-      max-width: 500px;
-      border-radius: 32px;
-      padding: 24px;
-      max-height: 85vh;
-      overflow-y: auto;
-      position: relative;
-    }
-    .modal-close {
-      position: absolute;
-      right: 20px;
-      top: 16px;
-      background: none;
-      border: none;
-      font-size: 28px;
-      cursor: pointer;
-    }
-    .toggle-group {
-      display: flex;
-      gap: 12px;
-      margin: 12px 0;
-    }
-    .toggle-opt {
-      flex: 1;
-      background: #EDF2F7;
-      border: none;
-      padding: 10px;
-      border-radius: 50px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .toggle-opt.active {
-      background: #2C7DA0;
-      color: white;
-    }
-    textarea, .form-input {
-      width: 100%;
-      padding: 12px;
-      border-radius: 20px;
-      border: 1px solid #CBD5E0;
-      font-family: inherit;
-      margin-top: 4px;
-    }
-    .btn-publicar {
-      background: #2C7DA0;
-      color: white;
-      border: none;
-      width: 100%;
-      padding: 14px;
-      border-radius: 40px;
-      font-weight: bold;
-      margin-top: 16px;
-    }
-    .btn-publicar:disabled { opacity: 0.6; }
-    .location-status { font-size: 0.75rem; margin: 12px 0; display: flex; gap: 6px; align-items: center; }
+    .cm-ofrezco { background:var(--blue); }
+    .cm-necesito { background:var(--orange); }
+    .cm-resolved { background:var(--gray-300); opacity:0.7; }
 
-    /* MARKER PERSONALIZADO */
-    .custom-div-icon {
-      background: transparent;
-      border: none;
+    /* Popup minicard */
+    .leaflet-popup-content-wrapper {
+      border-radius:var(--radius-md) !important;
+      box-shadow:var(--shadow-lg) !important;
+      border:none !important;
+      padding:0 !important;
+      overflow:hidden;
     }
-    .custom-marker {
-      width: 42px;
-      height: 42px;
-      border-radius: 42px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-      border: 2px solid white;
-      font-size: 20px;
+    .leaflet-popup-content {
+      margin:0 !important;
+      width:auto !important;
     }
-    .marker-resuelto {
-      filter: grayscale(0.6);
-      opacity: 0.75;
-    }
-    /* popup minicard */
+    .leaflet-popup-tip-container { display:none; }
     .minicard {
-      width: 240px;
-      font-family: 'Inter', sans-serif;
+      width:240px;
+      font-family:'Nunito', sans-serif;
+      padding:14px;
     }
     .minicard-top {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:8px;
     }
     .minicard-photo {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
+      width:34px; height:34px;
+      border-radius:50%;
+      object-fit:cover;
+      border:2px solid var(--gray-100);
+    }
+    .minicard-name {
+      font-weight:700;
+      font-size:0.82rem;
+      color:var(--gray-900);
     }
     .minicard-badges {
-      display: flex;
-      gap: 6px;
-      margin: 6px 0;
+      display:flex;
+      gap:5px;
+      margin-bottom:8px;
+      flex-wrap:wrap;
     }
-    .badge-ofrezco { background: #C7F2F0; color: #0F5C6B; }
-    .badge-necesito { background: #FFE3C9; color: #B45309; }
-    .badge-resuelto { background: #CBD5E0; color: #2D3748; }
+    .badge {
+      padding:3px 9px;
+      border-radius:var(--radius-xl);
+      font-size:0.72rem;
+      font-weight:700;
+    }
+    .badge-ofrezco { background:var(--blue-light); color:var(--blue-dark); }
+    .badge-necesito { background:var(--orange-light); color:var(--orange); }
+    .badge-resolved { background:var(--gray-100); color:var(--gray-500); }
+    .badge-cat { background:var(--gray-100); color:var(--gray-700); }
     .minicard-desc {
-      font-size: 0.8rem;
-      margin: 8px 0;
+      font-size:0.8rem;
+      color:var(--gray-700);
+      line-height:1.45;
+      margin-bottom:10px;
     }
-    .countdown-bar {
-      height: 6px;
-      background: #E2E8F0;
-      border-radius: 10px;
-      margin: 6px 0;
+    .mc-countdown { margin-bottom:8px; }
+    .cbar {
+      height:5px;
+      background:var(--gray-100);
+      border-radius:4px;
+      overflow:hidden;
+      margin-bottom:3px;
     }
-    .countdown-fill {
-      height: 6px;
-      border-radius: 10px;
-      background: #48BB78;
+    .cbar-fill {
+      height:100%;
+      border-radius:4px;
+      background:var(--green);
+      transition:width 0.3s ease;
     }
-    .fill-critical { background: #E53E3E; }
-    .fill-urgent { background: #ED8936; }
-    .toast {
-      position: fixed;
-      bottom: 90px;
-      left: 20px;
-      right: 20px;
-      background: #1A202C;
-      color: white;
-      padding: 12px;
-      border-radius: 60px;
-      text-align: center;
-      z-index: 1200;
+    .cbar-fill.urgent { background:var(--orange); }
+    .cbar-fill.critical { background:var(--red); }
+    .cbar-text {
+      font-size:0.7rem;
+      color:var(--gray-500);
+      font-weight:600;
     }
-    hr { margin: 12px 0; }
+    .mc-btn {
+      width:100%;
+      background:var(--blue-xlight);
+      border:none;
+      border-radius:var(--radius-xl);
+      padding:7px;
+      font-family:inherit;
+      font-size:0.78rem;
+      font-weight:700;
+      color:var(--blue-dark);
+      cursor:pointer;
+      transition:background var(--transition);
+    }
+    .mc-btn:hover { background:var(--blue-light); }
+
+    /* ─── MODALS ──────────────────────────────────────────────── */
+    .overlay {
+      position:fixed;
+      inset:0;
+      background:rgba(10,25,45,0.5);
+      backdrop-filter:blur(4px);
+      -webkit-backdrop-filter:blur(4px);
+      z-index:500;
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+      animation:fadeOverlay 0.2s ease;
+    }
+    .overlay.hidden { display:none; }
+    @keyframes fadeOverlay {
+      from { opacity:0; }
+      to   { opacity:1; }
+    }
+    .sheet {
+      background:var(--white);
+      width:100%;
+      max-width:520px;
+      border-radius:var(--radius-lg) var(--radius-lg) 0 0;
+      padding:0 0 env(safe-area-inset-bottom);
+      max-height:92dvh;
+      overflow-y:auto;
+      animation:slideUp 0.28s cubic-bezier(0.32,0.72,0,1);
+      position:relative;
+    }
+    @keyframes slideUp {
+      from { transform:translateY(40px); opacity:0; }
+      to   { transform:translateY(0);    opacity:1; }
+    }
+    .sheet-handle {
+      width:40px; height:4px;
+      background:var(--gray-300);
+      border-radius:4px;
+      margin:10px auto 0;
+    }
+    .sheet-header {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:14px 20px 12px;
+      border-bottom:1px solid var(--gray-100);
+    }
+    .sheet-title {
+      font-weight:800;
+      font-size:1rem;
+      color:var(--gray-900);
+    }
+    .sheet-close {
+      width:30px; height:30px;
+      background:var(--gray-100);
+      border:none;
+      border-radius:50%;
+      cursor:pointer;
+      font-size:16px;
+      display:flex; align-items:center; justify-content:center;
+      color:var(--gray-700);
+      transition:background var(--transition);
+    }
+    .sheet-close:hover { background:var(--gray-300); }
+    .sheet-body { padding:18px 20px 24px; }
+
+    /* ─── FORM COMPONENTS ─────────────────────────────────────── */
+    .segment-group {
+      display:flex;
+      gap:0;
+      background:var(--gray-100);
+      border-radius:var(--radius-xl);
+      padding:4px;
+      margin-bottom:14px;
+    }
+    .seg-btn {
+      flex:1;
+      border:none;
+      border-radius:var(--radius-xl);
+      padding:9px 10px;
+      font-family:inherit;
+      font-size:0.82rem;
+      font-weight:700;
+      color:var(--gray-500);
+      background:transparent;
+      cursor:pointer;
+      transition:all var(--transition);
+      display:flex; align-items:center; justify-content:center; gap:5px;
+    }
+    .seg-btn.active {
+      background:var(--white);
+      color:var(--gray-900);
+      box-shadow:var(--shadow-sm);
+    }
+    .seg-btn.active.ofrezco { color:var(--blue-dark); }
+    .seg-btn.active.necesito { color:var(--orange); }
+    .form-label {
+      display:block;
+      font-size:0.78rem;
+      font-weight:700;
+      color:var(--gray-700);
+      margin-bottom:5px;
+      letter-spacing:0.2px;
+    }
+    .form-field {
+      width:100%;
+      padding:11px 14px;
+      border-radius:var(--radius-md);
+      border:1.5px solid var(--gray-300);
+      font-family:inherit;
+      font-size:0.9rem;
+      color:var(--gray-900);
+      background:var(--gray-50);
+      transition:border-color var(--transition), background var(--transition);
+      outline:none;
+      resize:none;
+    }
+    .form-field:focus {
+      border-color:var(--blue);
+      background:var(--white);
+    }
+    .form-field::placeholder { color:var(--gray-300); }
+    .form-row { margin-bottom:14px; }
+    .phone-wrap {
+      display:flex;
+      align-items:center;
+      gap:0;
+    }
+    .phone-prefix {
+      background:var(--gray-100);
+      border:1.5px solid var(--gray-300);
+      border-right:none;
+      border-radius:var(--radius-md) 0 0 var(--radius-md);
+      padding:11px 12px;
+      font-weight:700;
+      font-size:0.85rem;
+      color:var(--gray-700);
+      white-space:nowrap;
+    }
+    .phone-wrap .form-field {
+      border-radius:0 var(--radius-md) var(--radius-md) 0;
+    }
+    .loc-status {
+      display:flex; align-items:center; gap:7px;
+      background:var(--gray-50);
+      border-radius:var(--radius-md);
+      padding:10px 14px;
+      font-size:0.8rem;
+      font-weight:600;
+      color:var(--gray-700);
+      margin-bottom:14px;
+      border:1.5px solid var(--gray-100);
+    }
+    .loc-dot {
+      width:8px; height:8px;
+      border-radius:50%;
+      background:var(--gray-300);
+      flex-shrink:0;
+    }
+    .loc-dot.ok { background:var(--green); animation:pulse 2s infinite; }
+    .loc-dot.err { background:var(--red); }
+    @keyframes pulse {
+      0%,100% { opacity:1; }
+      50% { opacity:0.4; }
+    }
+    .btn-primary {
+      width:100%;
+      background:linear-gradient(135deg, var(--blue-dark), var(--blue));
+      border:none;
+      border-radius:var(--radius-xl);
+      padding:14px;
+      color:white;
+      font-family:inherit;
+      font-weight:800;
+      font-size:0.95rem;
+      cursor:pointer;
+      transition:opacity var(--transition), transform var(--transition);
+      box-shadow:0 3px 12px rgba(44,125,160,0.35);
+    }
+    .btn-primary:hover:not(:disabled) { opacity:0.92; transform:translateY(-1px); }
+    .btn-primary:disabled { opacity:0.45; cursor:not-allowed; transform:none; }
+
+    /* ─── DETAIL MODAL ───────────────────────────────────────── */
+    .detail-hero {
+      display:flex; align-items:center; gap:12px;
+      margin-bottom:14px;
+    }
+    .detail-photo {
+      width:52px; height:52px;
+      border-radius:50%;
+      object-fit:cover;
+      border:3px solid var(--gray-100);
+    }
+    .detail-info { flex:1; }
+    .detail-name {
+      font-weight:800; font-size:0.95rem;
+      color:var(--gray-900);
+    }
+    .detail-date {
+      font-size:0.75rem;
+      color:var(--gray-500);
+      font-weight:600;
+    }
+    .detail-badges {
+      display:flex; gap:6px; flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+    .detail-desc {
+      font-size:0.9rem;
+      line-height:1.55;
+      color:var(--gray-700);
+      margin-bottom:16px;
+      background:var(--gray-50);
+      border-radius:var(--radius-md);
+      padding:12px 14px;
+    }
+    .detail-countdown { margin-bottom:16px; }
+    .detail-cbar {
+      height:7px;
+      background:var(--gray-100);
+      border-radius:6px;
+      overflow:hidden;
+      margin-bottom:5px;
+    }
+    .detail-cbar-fill {
+      height:100%; border-radius:6px;
+      background:var(--green);
+    }
+    .detail-cbar-fill.urgent { background:var(--orange); }
+    .detail-cbar-fill.critical { background:var(--red); }
+    .detail-cbar-label {
+      font-size:0.78rem;
+      font-weight:700;
+      color:var(--gray-500);
+    }
     .btn-whatsapp {
-      display: block;
-      background: #25D366;
-      text-align: center;
-      padding: 10px;
-      border-radius: 40px;
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      background:#25D366;
+      color:white;
+      border:none;
+      border-radius:var(--radius-xl);
+      padding:14px;
+      font-family:inherit;
+      font-weight:800;
+      font-size:0.95rem;
+      text-decoration:none;
+      cursor:pointer;
+      transition:background var(--transition);
+      box-shadow:0 3px 12px rgba(37,211,102,0.35);
+    }
+    .btn-whatsapp:hover { background:#1fbc59; }
+    .resolved-notice {
+      background:var(--gray-100);
+      border-radius:var(--radius-md);
+      padding:12px 14px;
+      font-size:0.82rem;
+      font-weight:700;
+      color:var(--gray-500);
+      text-align:center;
+    }
+    .own-phone-notice {
+      background:var(--blue-xlight);
+      border-radius:var(--radius-md);
+      padding:12px 14px;
+      font-size:0.82rem;
+      font-weight:600;
+      color:var(--blue-dark);
+    }
+
+    /* ─── DONATION MODAL ──────────────────────────────────────── */
+    .donation-body { text-align:center; padding-bottom:24px; }
+    .donation-emoji { font-size:3rem; margin-bottom:8px; }
+    .donation-title {
+      font-weight:900; font-size:1.2rem;
+      color:var(--gray-900); margin-bottom:6px;
+    }
+    .donation-sub {
+      font-size:0.85rem;
+      color:var(--gray-500);
+      line-height:1.5;
+      margin-bottom:18px;
+    }
+    .cvu-box {
+      background:var(--gray-50);
+      border:1.5px solid var(--gray-100);
+      border-radius:var(--radius-md);
+      padding:14px;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .cvu-label {
+      font-size:0.7rem;
+      font-weight:700;
+      color:var(--gray-500);
+      letter-spacing:0.5px;
+      text-transform:uppercase;
+      margin-bottom:4px;
+    }
+    .cvu-number {
+      font-size:0.88rem;
+      font-weight:700;
+      color:var(--gray-900);
+      letter-spacing:0.5px;
+      word-break:break-all;
+    }
+    .btn-copy {
+      margin-top:10px;
+      width:100%;
+      background:var(--blue-xlight);
+      border:none;
+      border-radius:var(--radius-xl);
+      padding:10px;
+      font-family:inherit;
+      font-size:0.82rem;
+      font-weight:700;
+      color:var(--blue-dark);
+      cursor:pointer;
+      transition:background var(--transition);
+    }
+    .btn-copy:hover { background:var(--blue-light); }
+
+    /* ─── TOAST ───────────────────────────────────────────────── */
+    .toast {
+      position:fixed;
+      bottom:82px; left:16px; right:16px;
+      z-index:900;
+      background:var(--gray-900);
+      color:white;
+      padding:12px 18px;
+      border-radius:var(--radius-xl);
+      font-size:0.85rem;
+      font-weight:600;
+      text-align:center;
+      box-shadow:var(--shadow-lg);
+      animation:toastIn 0.2s ease;
+      pointer-events:none;
+    }
+    .toast.hidden { display:none; }
+    .toast.success { background:var(--green); }
+    .toast.error   { background:var(--red); }
+    @keyframes toastIn {
+      from { opacity:0; transform:translateY(10px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* ─── LOADING SPINNER ─────────────────────────────────────── */
+    .spinner {
+      width:18px; height:18px;
+      border:2.5px solid rgba(255,255,255,0.3);
+      border-top-color:white;
+      border-radius:50%;
+      animation:spin 0.7s linear infinite;
+      display:inline-block;
+      vertical-align:middle;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* ─── LEAFLET OVERRIDES ───────────────────────────────────── */
+    .leaflet-control-attribution { display:none !important; }
+    .leaflet-container { cursor:default !important; }
+
+    /* ─── REDUCED MOTION ──────────────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration:0.01ms !important;
+        transition-duration:0.01ms !important;
+      }
     }
   </style>
 </head>
 <body>
-<div class="app-main" id="appContainer">
-  <header class="app-header">
-    <div class="logo-area">
+
+<div class="app">
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo">
       <div class="logo-icon">🤝</div>
-      <div class="logo-text">Tu Mano a Uno</div>
+      <div class="logo-name">Tu <span>Mano</span> a Uno</div>
     </div>
-    <div class="header-actions">
-        <a href='https://cafecito.app/tumanoauno' rel='noopener' target='_blank'><img srcset='https://cdn.cafecito.app/imgs/buttons/button_6.png 1x, https://cdn.cafecito.app/imgs/buttons/button_6_2x.png 2x, https://cdn.cafecito.app/imgs/buttons/button_6_3.75x.png 3.75x' src='https://cdn.cafecito.app/imgs/buttons/button_6.png' alt='Invitame un café en cafecito.app' /></a>
-      <div class="user-area" id="userAvatarWrap">
-        <img id="userAvatarImg" class="user-avatar" src="https://ui-avatars.com/api/?background=7EC8E3&color=fff&name=Usuario" alt="avatar">
-        <div id="userMenuDropdown" class="user-menu hidden">
-          <div id="userNameDisplay" class="user-menu-name"></div>
-          <button id="logoutBtnHeader" class="logout-btn">Cerrar sesión</button>
+    <div class="header-right">
+      <button class="btn-donate" id="donarBtn">❤️ Apoyar</button>
+      <div class="avatar-wrap" id="avatarWrap">
+        <img id="avatarImg" class="avatar" src="https://ui-avatars.com/api/?background=7EC8E3&color=fff&name=U&size=80" alt="avatar">
+        <div class="user-dot" id="userDot"></div>
+        <div id="dropdownMenu" class="dropdown hidden">
+          <div id="dropdownName" class="dropdown-name">Invitado</div>
+          <button id="loginBtn" class="login-btn">Iniciar sesión con Google</button>
+          <button id="logoutBtn" class="dropdown-btn" style="display:none">Cerrar sesión</button>
         </div>
       </div>
     </div>
   </header>
 
-  <div class="city-bar">
-    <span id="cityNameLabel" class="city-label">Cargando...</span>
-    <select id="citySelector" class="city-select">
-      <option value="">Mi ubicación</option>
-      <option value="-34.6118,-58.3960">Buenos Aires</option>
-      <option value="-31.4201,-64.1888">Córdoba</option>
-      <option value="-32.9468,-60.6393">Rosario</option>
-    </select>
-  </div>
+  <!-- MAP AREA -->
+  <div class="map-wrap">
+    <div id="map"></div>
 
-  <div id="map" class="map-container"></div>
-  <div class="custom-zoom">
-    <button id="zoomInBtn" class="zoom-btn">+</button>
-    <button id="zoomOutBtn" class="zoom-btn">−</button>
+    <!-- CITY BAR -->
+    <div class="city-bar">
+      <span class="city-icon">📍</span>
+      <span class="city-label" id="cityLabel">Cargando…</span>
+      <div class="city-divider"></div>
+      <button class="city-select-btn" id="citySelectBtn">Cambiar ciudad ›</button>
+    </div>
+
+    <!-- CITY PICKER -->
+    <div class="city-picker hidden" id="cityPicker">
+      <div class="city-picker-title">¿Dónde querés ver ayudas?</div>
+      <div class="city-grid">
+        <button class="city-option" data-lat="-34.6118" data-lng="-58.3960" data-name="Buenos Aires">
+          <span class="city-opt-name">🏙 Buenos Aires</span>
+          <span class="city-opt-sub">CABA</span>
+        </button>
+        <button class="city-option" data-lat="-31.4201" data-lng="-64.1888" data-name="Córdoba">
+          <span class="city-opt-name">🌳 Córdoba</span>
+          <span class="city-opt-sub">Capital</span>
+        </button>
+        <button class="city-option" data-lat="-32.9468" data-lng="-60.6393" data-name="Rosario">
+          <span class="city-opt-name">🌊 Rosario</span>
+          <span class="city-opt-sub">Santa Fe</span>
+        </button>
+        <button class="city-option" data-lat="-26.8241" data-lng="-65.2226" data-name="Tucumán">
+          <span class="city-opt-name">🏔 Tucumán</span>
+          <span class="city-opt-sub">Capital</span>
+        </button>
+        <button class="city-option" data-lat="-38.7196" data-lng="-62.2724" data-name="Bahía Blanca">
+          <span class="city-opt-name">⚓ Bahía Blanca</span>
+          <span class="city-opt-sub">Bs As</span>
+        </button>
+        <button class="city-option" id="myLocationOption" data-lat="" data-lng="" data-name="">
+          <span class="city-opt-name">🎯 Mi ubicación</span>
+          <span class="city-opt-sub">Detectar ahora</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ZOOM CONTROL -->
+    <div class="zoom-control">
+      <button class="zoom-icon-btn" id="zoomInBtn" title="Acercar">+</button>
+      <div class="zoom-slider-wrap">
+        <div class="zoom-track"><div class="zoom-fill" id="zoomFill"></div></div>
+        <input type="range" class="zoom-thumb-input" id="zoomSlider" min="10" max="18" value="12" step="1">
+      </div>
+      <button class="zoom-icon-btn" id="zoomOutBtn" title="Alejar">−</button>
+    </div>
+
+    <!-- FAB -->
+    <button class="fab" id="fabBtn">
+      <span>＋</span> Publicar ayuda
+    </button>
   </div>
-  <button id="fabBtn" class="fab">➕ Ofrecé o solicitá aquí</button>
 </div>
 
-<!-- MODAL PUBLICAR -->
-<div id="postModal" class="modal-overlay hidden">
-  <div class="modal-container">
-    <button class="modal-close" id="closeModalBtn">×</button>
-    <h3>Nueva ayuda</h3>
-    <div style="display:flex; gap: 10px; margin: 15px 0;">
-      <button id="tipoOfrezco" class="toggle-opt active">🙌 Ofrezco</button>
-      <button id="tipoNecesito" class="toggle-opt">🤝 Necesito</button>
+<!-- MODAL: PUBLICAR -->
+<div id="postModal" class="overlay hidden">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title">Nueva publicación</div>
+      <button class="sheet-close" id="closePostModal">✕</button>
     </div>
-    <div style="display:flex; gap: 10px; margin-bottom: 15px;">
-      <button id="catProducto" class="toggle-opt active">📦 Producto</button>
-      <button id="catServicio" class="toggle-opt">⚙️ Servicio</button>
+    <div class="sheet-body">
+      <!-- Tipo: ofrezco / necesito -->
+      <label class="form-label">¿Qué querés hacer?</label>
+      <div class="segment-group" id="tipoGroup">
+        <button class="seg-btn active ofrezco" data-val="ofrezco" id="tipoOfrezco">🙌 Ofrezco</button>
+        <button class="seg-btn necesito" data-val="necesito" id="tipoNecesito">🤝 Necesito</button>
+      </div>
+      <!-- Categoría -->
+      <label class="form-label">Tipo</label>
+      <div class="segment-group" id="catGroup">
+        <button class="seg-btn active" data-val="producto" id="catProducto">📦 Producto</button>
+        <button class="seg-btn" data-val="servicio" id="catServicio">⚙️ Servicio</button>
+      </div>
+      <!-- Descripción -->
+      <div class="form-row">
+        <label class="form-label" for="postDesc">Descripción</label>
+        <textarea id="postDesc" class="form-field" rows="3" placeholder="Ej: Dono ropa para adultos, zona Palermo…" maxlength="300"></textarea>
+        <div style="text-align:right;font-size:0.7rem;color:var(--gray-500);margin-top:3px;" id="descCounter">0 / 300</div>
+      </div>
+      <!-- Teléfono -->
+      <div class="form-row">
+        <label class="form-label" for="postPhone">WhatsApp (sin 0 ni 15)</label>
+        <div class="phone-wrap">
+          <div class="phone-prefix">+54</div>
+          <input type="tel" id="postPhone" class="form-field" placeholder="1137881082" maxlength="12">
+        </div>
+      </div>
+      <!-- Ubicación -->
+      <div class="loc-status" id="locStatus">
+        <div class="loc-dot" id="locDot"></div>
+        <span id="locText">Obteniendo ubicación…</span>
+      </div>
+      <button class="btn-primary" id="publishBtn" disabled>Publicar</button>
     </div>
-    <textarea id="postDescripcion" rows="3" placeholder="Descripción (ej: dono ropa, necesito ayuda con compras)"></textarea>
-    <div style="margin: 12px 0;">
-      <label>WhatsApp (sin 0 ni 15): +54 </label>
-      <input type="tel" id="postPhone" placeholder="1137881082" class="form-input">
-    </div>
-    <div id="modalLocationStatus" class="location-status">📍 Buscando ubicación...</div>
-    <button id="publishBtn" class="btn-publicar" disabled>Publicar</button>
   </div>
 </div>
 
-<!-- MODAL DETALLE -->
-<div id="detailModal" class="modal-overlay hidden">
-  <div class="modal-container">
-    <button class="modal-close" id="closeDetailBtn">×</button>
-    <div id="detailContent"></div>
-  </div>
-</div>
-
-<!-- MODAL DONAR -->
-<div id="donationModal" class="modal-overlay hidden">
-  <div class="modal-container" style="text-align:center">
-    <button class="modal-close" id="closeDonationBtn">×</button>
-    <div style="font-size:40px">💙</div>
-    <h3>¡Gracias por apoyar!</h3>
-    <p>Tu donación mantiene la comunidad activa y gratuita.</p>
-    <div style="background:#F1F5F9; border-radius: 40px; padding: 12px; margin:12px 0">
-      <strong>CVU: 0000003100040849915686</strong>
-      <button id="copyCvuBtn" style="margin-left: 8px;">📋 Copiar</button>
+<!-- MODAL: DETALLE -->
+<div id="detailModal" class="overlay hidden">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title" id="detailTitle">Detalle</div>
+      <button class="sheet-close" id="closeDetailModal">✕</button>
     </div>
-   
+    <div class="sheet-body" id="detailContent"></div>
   </div>
 </div>
-<div id="toastMsg" class="toast hidden"></div>
 
+<!-- MODAL: DONAR -->
+<div id="donateModal" class="overlay hidden">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title">Apoyar el proyecto</div>
+      <button class="sheet-close" id="closeDonateModal">✕</button>
+    </div>
+    <div class="sheet-body donation-body">
+      <div class="donation-emoji">💙</div>
+      <div class="donation-title">¡Gracias por apoyar!</div>
+      <div class="donation-sub">Tu donación mantiene la comunidad activa<br>y gratuita para todos.</div>
+      <div class="cvu-box">
+        <div class="cvu-label">CVU</div>
+        <div class="cvu-number">0000 0031 0004 0849 9156 86</div>
+        <button class="btn-copy" id="copyCvuBtn">📋 Copiar CVU</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast hidden"></div>
+
+<!-- SCRIPTS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // --------------------------------------------------------------
-  //  SIMULACIÓN DE POSTS (activos + vencidos/resueltos en gris)
-  // --------------------------------------------------------------
-  const MOCK_POSTS = [
-    {
-      id: "p1", userId: "mock1", userName: "Carolina Méndez", userPhoto: "https://randomuser.me/api/portraits/women/68.jpg",
-      type: "ofrezco", category: "producto", description: "Juguetes didácticos en buen estado. Zona Almagro.",
-      lat: -34.6068, lng: -58.4210, phone: "1156781234", createdAt: Date.now() - 3600000,
-      locationName: "Almagro, CABA", durationHours: 24, solved: false
-    },
-    {
-      id: "p2", userId: "mock2", userName: "José Rojas", userPhoto: "https://randomuser.me/api/portraits/men/32.jpg",
-      type: "necesito", category: "servicio", description: "Necesito profesor de matemáticas para secundario, 2 veces por semana.",
-      lat: -34.5880, lng: -58.3980, phone: "1134556677", createdAt: Date.now() - 2*3600000,
-      locationName: "Balvanera", durationHours: 24, solved: false
-    },
-    {
-      id: "p3", userId: "mock3", userName: "Lucía Ferreyra", userPhoto: "https://randomuser.me/api/portraits/women/44.jpg",
-      type: "ofrezco", category: "servicio", description: "Clases gratuitas de computación básica los sábados.",
-      lat: -34.6180, lng: -58.3680, phone: "1169876543", createdAt: Date.now() - 10*3600000,
-      locationName: "Palermo", durationHours: 24, solved: false
-    },
-    // PUBLICACIÓN VENCIDA / RESUELTA (GRIS)
-    {
-      id: "p4", userId: "mock4", userName: "Gabriel Soto", userPhoto: "https://randomuser.me/api/portraits/men/55.jpg",
-      type: "necesito", category: "producto", description: "Silla de ruedas en préstamo temporal (ya resuelto ✅).",
-      lat: -34.6280, lng: -58.4450, phone: "1122334455", createdAt: Date.now() - 48*3600000,
-      locationName: "Flores", durationHours: 24, solved: true, remainingPercent: 0, remainingTime: "Vencido"
-    },
-    {
-      id: "p5", userId: "mock5", userName: "Marta Giménez", userPhoto: "https://randomuser.me/api/portraits/women/90.jpg",
-      type: "ofrezco", category: "producto", description: "Ropa de abrigo para niños (donación finalizada).",
-      lat: -34.5690, lng: -58.4140, phone: "1165432109", createdAt: Date.now() - 72*3600000,
-      locationName: "Boedo", durationHours: 24, solved: true, remainingPercent: 0, remainingTime: "Cerrado"
-    }
-  ];
+/* ================================================================
+   TU MANO A UNO — Unified App Script
+================================================================ */
 
-  // Agregar tiempo restante a cada mock
-  function computeRemaining(post) {
-    if (post.solved) return { percent: 0, text: "✅ Resuelto / Vencido" };
-    const elapsed = (Date.now() - new Date(post.createdAt).getTime()) / (1000 * 3600);
-    const remainingHours = Math.max(0, post.durationHours - elapsed);
-    const percent = (remainingHours / post.durationHours) * 100;
-    if(remainingHours <= 0) return { percent: 0, text: "⏰ Expirado" };
-    return { percent: Math.min(100, percent), text: `${Math.ceil(remainingHours)}h restantes` };
+// ── CONFIG ────────────────────────────────────────────────────────
+const CONFIG = {
+  GOOGLE_CLIENT_ID: '15579611596-cl542m98cnp2ti26ncotbifk2lbi3psn.apps.googleusercontent.com',
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwbabkHpbxhqkbXfkDBcB4UkaJujnb6WUrHKbv5qDl7gSo7UWO0rthQ-pu5JusPHyhZ/exec',
+  APP_NAME: 'Tu Mano a Uno',
+  CVU: '0000003100040849915686',
+  CARD_DURATION_HOURS: 24,
+  DEFAULT_LAT: -34.6118,
+  DEFAULT_LNG: -58.3960,
+  DEFAULT_ZOOM: 12,
+  MAX_POSTS_PER_DAY: 5,
+  MIN_ZOOM: 10,
+  MAX_ZOOM: 18,
+};
+Object.freeze(CONFIG);
+
+// ── MOCK DATA ─────────────────────────────────────────────────────
+const MOCK_POSTS = [
+  {
+    id:'p1', userId:'mock1', userName:'Carolina Méndez',
+    userPhoto:'https://randomuser.me/api/portraits/women/68.jpg',
+    type:'ofrezco', category:'producto',
+    description:'Juguetes didácticos en buen estado. Zona Almagro. Ideales para chicos de 3 a 7 años.',
+    lat:-34.6068, lng:-58.4210, phone:'1156781234',
+    createdAt: Date.now() - 3_600_000,
+    locationName:'Almagro, CABA', durationHours:24, solved:false
+  },
+  {
+    id:'p2', userId:'mock2', userName:'José Rojas',
+    userPhoto:'https://randomuser.me/api/portraits/men/32.jpg',
+    type:'necesito', category:'servicio',
+    description:'Necesito profesor de matemáticas para secundario, 2 veces por semana. Zona Balvanera.',
+    lat:-34.5880, lng:-58.3980, phone:'1134556677',
+    createdAt: Date.now() - 2*3_600_000,
+    locationName:'Balvanera', durationHours:24, solved:false
+  },
+  {
+    id:'p3', userId:'mock3', userName:'Lucía Ferreyra',
+    userPhoto:'https://randomuser.me/api/portraits/women/44.jpg',
+    type:'ofrezco', category:'servicio',
+    description:'Clases gratuitas de computación básica los sábados por la mañana. ¡Todos son bienvenidos!',
+    lat:-34.6180, lng:-58.3680, phone:'1169876543',
+    createdAt: Date.now() - 10*3_600_000,
+    locationName:'Palermo', durationHours:24, solved:false
+  },
+  {
+    id:'p4', userId:'mock4', userName:'Gabriel Soto',
+    userPhoto:'https://randomuser.me/api/portraits/men/55.jpg',
+    type:'necesito', category:'producto',
+    description:'Silla de ruedas en préstamo temporal (ya resuelto ✅).',
+    lat:-34.6280, lng:-58.4450, phone:'1122334455',
+    createdAt: Date.now() - 48*3_600_000,
+    locationName:'Flores', durationHours:24, solved:true
+  },
+  {
+    id:'p5', userId:'mock5', userName:'Marta Giménez',
+    userPhoto:'https://randomuser.me/api/portraits/women/90.jpg',
+    type:'ofrezco', category:'producto',
+    description:'Ropa de abrigo para niños (donación finalizada).',
+    lat:-34.5690, lng:-58.4140, phone:'1165432109',
+    createdAt: Date.now() - 72*3_600_000,
+    locationName:'Boedo', durationHours:24, solved:true
   }
+];
 
-  // ------------------ APP GLOBAL ------------------------
-  let currentUser = null;
-  let mapInstance = null;
-  let markersLayer = [];
-  let currentLocationCoords = null;
-  let currentFormLocation = null;
-  let activeFormType = "ofrezco";
-  let activeFormCat = "producto";
-  let allPosts = [...MOCK_POSTS];
+// ── STATE ─────────────────────────────────────────────────────────
+let currentUser = null;
+let mapInstance = null;
+let markersLayer = [];
+let currentLocationCoords = null;
+let currentFormLocation = null;
+let activeFormType = 'ofrezco';
+let activeFormCat = 'producto';
+let allPosts = [...MOCK_POSTS];
+let countdownIntervals = [];
 
-  // helpers
-  function showToast(msg, type="info") {
-    const toast = document.getElementById('toastMsg');
-    toast.textContent = msg;
-    toast.classList.remove('hidden');
-    setTimeout(() => toast.classList.add('hidden'), 3000);
+// ── UTILS ─────────────────────────────────────────────────────────
+function sanitize(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+    .replace(/'/g,'&#039;').trim();
+}
+
+function parseJwt(token) {
+  try {
+    const b64 = token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+    return JSON.parse(decodeURIComponent(atob(b64).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')));
+  } catch { return null; }
+}
+
+function computeRemaining(post) {
+  if (post.solved) return { percent:0, text:'Resuelto', cls:'' };
+  const elapsed = (Date.now() - new Date(post.createdAt).getTime()) / 3_600_000;
+  const left = Math.max(0, post.durationHours - elapsed);
+  if (left <= 0) return { percent:0, text:'Expirado', cls:'' };
+  const pct = (left / post.durationHours) * 100;
+  const h = Math.floor(left);
+  const m = Math.floor((left - h) * 60);
+  const text = h > 0 ? `${h}h ${m}m restantes` : `${m}m restantes`;
+  const cls = pct < 20 ? 'critical' : pct < 50 ? 'urgent' : '';
+  return { percent: Math.min(100, pct), text, cls };
+}
+
+function isExpired(post) {
+  return post.solved || (Date.now() - new Date(post.createdAt).getTime() > post.durationHours * 3_600_000);
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────
+let toastTimer = null;
+function showToast(msg, type='info') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast ${type}`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.classList.add('hidden'); }, 3200);
+}
+
+// ── GOOGLE AUTH ───────────────────────────────────────────────────
+function initGoogleAuth() {
+  if (!window.google) { setTimeout(initGoogleAuth, 150); return; }
+  google.accounts.id.initialize({
+    client_id: CONFIG.GOOGLE_CLIENT_ID,
+    callback: onGoogleCredential,
+    auto_select: false,
+    cancel_on_tap_outside: true,
+  });
+  const stored = sessionStorage.getItem('tmu_user');
+  if (stored) {
+    try { currentUser = JSON.parse(stored); updateUserUI(); } catch { /* ignore */ }
+  } else {
+    updateUserUI();
   }
+}
 
-  function sanitize(str) { if(!str) return ""; return String(str).replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
-
-  // Renderizar marcadores en mapa
-  function renderAllPosts() {
-    if (!mapInstance) return;
-    markersLayer.forEach(m => mapInstance.removeLayer(m));
-    markersLayer = [];
-    allPosts.forEach(post => {
-      if (!post.lat || !post.lng) return;
-      const isExpiredOrResolved = post.solved || (Date.now() - new Date(post.createdAt).getTime() > post.durationHours * 3600000);
-      const markerColor = isExpiredOrResolved ? "#94A3B8" : (post.type === "ofrezco" ? "#4BA8CC" : "#e0873a");
-      const emoji = post.type === "ofrezco" ? "🙌" : "🤝";
-      const solvedText = isExpiredOrResolved ? " (Resuelto)" : "";
-      const iconHtml = `<div class="custom-marker" style="background:${markerColor}; opacity:${isExpiredOrResolved?0.7:1};"><div class="custom-marker-inner">${emoji}</div></div>`;
-      const icon = L.divIcon({ html: iconHtml, className: 'custom-div-icon', iconSize: [38,38], popupAnchor: [0,-15] });
-      const marker = L.marker([post.lat, post.lng], { icon });
-      const remaining = computeRemaining(post);
-      const typeClass = isExpiredOrResolved ? "badge-resuelto" : (post.type === "ofrezco" ? "badge-ofrezco" : "badge-necesito");
-      const typeText = isExpiredOrResolved ? "🔒 Resuelto" : (post.type === "ofrezco" ? "🙌 Ofrezco" : "🤝 Necesito");
-      const categoryText = post.category === "producto" ? "📦 Producto" : "⚙️ Servicio";
-      const fillClass = (remaining.percent < 20 && !isExpiredOrResolved) ? 'fill-critical' : (remaining.percent<50 && !isExpiredOrResolved) ? 'fill-urgent' : '';
-      const popupHTML = `
-        <div class="minicard">
-          <div class="minicard-top"><img class="minicard-photo" src="${post.userPhoto || 'https://ui-avatars.com/api/?background=ccc'}" onerror="this.src='https://ui-avatars.com/api/?background=ccc'"><strong>${sanitize(post.userName)}</strong></div>
-          <div class="minicard-badges"><span class="minicard-badge ${typeClass}" style="padding:4px 12px;border-radius:20px;">${typeText}</span> <span style="background:#E2E8F0;padding:4px 12px;border-radius:20px;">${categoryText}</span></div>
-          <div class="minicard-desc">${sanitize(post.description)}</div>
-          ${!isExpiredOrResolved ? `<div class="countdown-bar"><div class="countdown-fill ${fillClass}" style="width: ${remaining.percent}%"></div></div><div>⏳ ${remaining.text}</div>` : `<div style="color:#64748B;">✅ Caso finalizado</div>`}
-          <button class="ver-mas-detalle" data-id="${post.id}" style="margin-top:8px; background:#EFF3F6; border:none; padding:6px; border-radius:40px; width:100%;">Ver más</button>
-        </div>`;
-      marker.bindPopup(popupHTML);
-      marker.on('popupopen', () => {
-        setTimeout(() => {
-          const btn = document.querySelector('.ver-mas-detalle');
-          if(btn) btn.onclick = (e) => { e.stopPropagation(); openDetailModal(post); mapInstance.closePopup(); };
-        }, 50);
-      });
-      marker.addTo(mapInstance);
-      markersLayer.push(marker);
-    });
-  }
-
-  function openDetailModal(post) {
-    const isExpired = post.solved || (Date.now() - new Date(post.createdAt).getTime() > post.durationHours * 3600000);
-    const modal = document.getElementById('detailModal');
-    const content = document.getElementById('detailContent');
-    const owner = currentUser && post.userId === currentUser.id;
-    const whatsappLink = (!isExpired && post.phone && !owner) ? `https://wa.me/54${post.phone}?text=Hola%20${encodeURIComponent(post.userName)}%2C%20vi%20tu%20publicaci%C3%B3n%20en%20Tu%20Mano%20a%20Uno%3A%20${encodeURIComponent(post.description)}` : '#';
-    content.innerHTML = `
-      <div style="display:flex; gap:12px;"><img src="${post.userPhoto}" width="50" height="50" style="border-radius:50%"><div><strong>${sanitize(post.userName)}</strong><br>${new Date(post.createdAt).toLocaleDateString()}</div></div>
-      <div style="margin:12px 0"><span class="badge-${post.type}">${post.type === "ofrezco" ? "Ofrezco" : "Necesito"}</span> <span>${post.category}</span></div>
-      <p>${sanitize(post.description)}</p>
-      ${!isExpired && post.phone && !owner ? `<a href="${whatsappLink}" target="_blank" class="btn-whatsapp">📱 Contactar por WhatsApp</a>` : ''}
-      ${owner && post.phone ? `<p>📞 Tu celular: +54 ${post.phone}</p>` : ''}
-      ${isExpired ? '<p style="color:#718096">🔒 Esta publicación ya está cerrada o vencida</p>' : ''}
-    `;
-    modal.classList.remove('hidden');
-  }
-
-  // GEOLOCATION + CIUDAD
-  function reverseCity(lat,lng) {
-    return fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10`)
-      .then(r=>r.json()).then(data=> data.address?.city || data.address?.town || "Buenos Aires").catch(()=>"Buenos Aires");
-  }
-
-  function initMapAndLocation() {
-    if(mapInstance) return;
-    mapInstance = L.map('map').setView([-34.6118, -58.3960], 12);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: 'Map data &copy; OpenStreetMap' }).addTo(mapInstance);
-    if(navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(async (pos) => {
-        const lat = pos.coords.latitude, lng = pos.coords.longitude;
-        currentLocationCoords = {lat,lng};
-        mapInstance.setView([lat,lng], 13);
-        const city = await reverseCity(lat,lng);
-        document.getElementById('cityNameLabel').innerText = city;
-      }, () => { document.getElementById('cityNameLabel').innerText = "Buenos Aires"; });
-    } else { document.getElementById('cityNameLabel').innerText = "Buenos Aires"; }
-    renderAllPosts();
-  }
-
-  function centerToCity(lat,lng) { if(mapInstance) mapInstance.setView([lat,lng],12); }
-
-  // LOGIN Google (sin pantalla separada)
-  let googleClientId = "15579611596-cl542m98cnp2ti26ncotbifk2lbi3psn.apps.googleusercontent.com"; // reemplazar si es necesario
-  function initGoogleAuth() {
-    if(!window.google) setTimeout(initGoogleAuth,200);
-    else {
-      google.accounts.id.initialize({
-        client_id: googleClientId,
-        callback: (response) => {
-          const payload = parseJwt(response.credential);
-          if(payload?.email) {
-            currentUser = { id: payload.sub, name: payload.name, email: payload.email, photo: payload.picture };
-            sessionStorage.setItem('tmu_user', JSON.stringify(currentUser));
-            updateUIForUser();
-            showToast(`Bienvenido ${currentUser.name}`);
-          }
-        }
-      });
-      const restore = sessionStorage.getItem('tmu_user');
-      if(restore) { currentUser = JSON.parse(restore); updateUIForUser(); }
-      else { updateUIForUser(); }
-    }
-  }
-
-  function parseJwt(token) { try { let base64 = token.split('.')[1]; return JSON.parse(atob(base64)); } catch(e){ return null; } }
-
-  function updateUIForUser() {
-    const avatar = document.getElementById('userAvatarImg');
-    const userNameSpan = document.getElementById('userNameDisplay');
-    if(currentUser) {
-      avatar.src = currentUser.photo || `https://ui-avatars.com/api/?background=7EC8E3&name=${currentUser.name}`;
-      userNameSpan.innerText = currentUser.name;
-    } else {
-      avatar.src = "https://ui-avatars.com/api/?background=7EC8E3&name=Usuario";
-      userNameSpan.innerText = "Invitado";
-    }
-  }
-
-  function signInGoogle() { if(window.google) google.accounts.id.prompt(); else showToast("Cargando login...","error"); }
-  function logout() { currentUser = null; sessionStorage.removeItem('tmu_user'); updateUIForUser(); showToast("Sesión cerrada"); }
-
-  // FORMULARIO PUBLICAR
-  async function getCurrentLocationForForm() {
-    return new Promise((resolve) => {
-      if(!navigator.geolocation) resolve(null);
-      navigator.geolocation.getCurrentPosition(async (pos) => {
-        const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        const city = await reverseCity(loc.lat, loc.lng);
-        resolve({ ...loc, city });
-      }, () => resolve(null));
-    });
-  }
-
-  async function showPublishModal() {
-    if(!currentUser) { showToast("Inicia sesión con Google para publicar", "error"); signInGoogle(); return; }
-    document.getElementById('postModal').classList.remove('hidden');
-    document.getElementById('postDescripcion').value = "";
-    document.getElementById('postPhone').value = "";
-    const statusDiv = document.getElementById('modalLocationStatus');
-    statusDiv.innerHTML = "📍 Obteniendo ubicación...";
-    const loc = await getCurrentLocationForForm();
-    if(loc) {
-      currentFormLocation = loc;
-      statusDiv.innerHTML = `📍 ${loc.city}`;
-      document.getElementById('publishBtn').disabled = false;
-    } else { statusDiv.innerHTML = "⚠️ Permiso denegado. No podrás publicar sin ubicación."; document.getElementById('publishBtn').disabled = true; }
-  }
-
-  async function publishNewPost() {
-    if(!currentFormLocation) { showToast("Ubicación no disponible","error"); return; }
-    const desc = document.getElementById('postDescripcion').value.trim();
-    const phone = document.getElementById('postPhone').value.replace(/\D/g,'');
-    if(desc.length < 5) { showToast("Descripción muy corta (min 5 caracteres)"); return; }
-    const newPost = {
-      id: "p"+Date.now(), userId: currentUser.id, userName: currentUser.name, userPhoto: currentUser.photo,
-      type: activeFormType, category: activeFormCat, description: desc, phone: phone,
-      lat: currentFormLocation.lat, lng: currentFormLocation.lng, locationName: currentFormLocation.city,
-      createdAt: Date.now(), durationHours: 24, solved: false
-    };
-    allPosts.unshift(newPost);
-    renderAllPosts();
-    document.getElementById('postModal').classList.add('hidden');
-    showToast("¡Publicación creada! Aparecerá en el mapa.");
-  }
-
-  // EVENTOS Y LISTENERS
-  function bindEvents() {
-    document.getElementById('fabBtn').onclick = showPublishModal;
-    document.getElementById('closeModalBtn').onclick = () => document.getElementById('postModal').classList.add('hidden');
-    document.getElementById('closeDetailBtn').onclick = () => document.getElementById('detailModal').classList.add('hidden');
-    document.getElementById('donarBtnHeader').onclick = () => document.getElementById('donationModal').classList.remove('hidden');
-    document.getElementById('closeDonationBtn').onclick = () => document.getElementById('donationModal').classList.add('hidden');
-    document.getElementById('copyCvuBtn').onclick = () => { navigator.clipboard.writeText("0000003100040849915686"); showToast("CVU copiado"); };
-    document.getElementById('logoutBtnHeader').onclick = logout;
-    document.getElementById('userAvatarWrap').onclick = (e) => { e.stopPropagation(); document.getElementById('userMenuDropdown').classList.toggle('hidden'); };
-    document.addEventListener('click',()=> document.getElementById('userMenuDropdown').classList.add('hidden'));
-    document.getElementById('tipoOfrezco').onclick = () => { activeFormType="ofrezco"; document.getElementById('tipoOfrezco').classList.add('active'); document.getElementById('tipoNecesito').classList.remove('active'); };
-    document.getElementById('tipoNecesito').onclick = () => { activeFormType="necesito"; document.getElementById('tipoNecesito').classList.add('active'); document.getElementById('tipoOfrezco').classList.remove('active'); };
-    document.getElementById('catProducto').onclick = () => { activeFormCat="producto"; document.getElementById('catProducto').classList.add('active'); document.getElementById('catServicio').classList.remove('active'); };
-    document.getElementById('catServicio').onclick = () => { activeFormCat="servicio"; document.getElementById('catServicio').classList.add('active'); document.getElementById('catProducto').classList.remove('active'); };
-    document.getElementById('publishBtn').onclick = publishNewPost;
-    document.getElementById('zoomInBtn').onclick = () => mapInstance.zoomIn();
-    document.getElementById('zoomOutBtn').onclick = () => mapInstance.zoomOut();
-    document.getElementById('citySelector').onchange = (e) => {
-      if(e.target.value) { const [lat,lng] = e.target.value.split(',').map(Number); centerToCity(lat,lng); }
-      else if(navigator.geolocation) navigator.geolocation.getCurrentPosition(p=> centerToCity(p.coords.latitude,p.coords.longitude));
-    };
-  }
-
-  window.onload = () => {
-    initMapAndLocation();
-    bindEvents();
-    initGoogleAuth();
+function onGoogleCredential(response) {
+  const payload = parseJwt(response.credential);
+  if (!payload?.email) { showToast('Error al iniciar sesión. Intentá de nuevo.', 'error'); return; }
+  currentUser = {
+    id: sanitize(payload.sub),
+    name: sanitize(payload.name),
+    email: sanitize(payload.email),
+    photo: payload.picture || '',
   };
+  try { sessionStorage.setItem('tmu_user', JSON.stringify(currentUser)); } catch { /* ignore */ }
+  updateUserUI();
+  showToast(`¡Bienvenido, ${currentUser.name.split(' ')[0]}! 👋`, 'success');
+}
+
+function signIn() {
+  if (!window.google) { showToast('Cargando…', 'error'); return; }
+  google.accounts.id.prompt(n => {
+    if (n.isNotDisplayed() || n.isSkippedMoment()) {
+      const tmp = document.createElement('div');
+      tmp.style.cssText = 'position:fixed;top:-999px;opacity:0;';
+      document.body.appendChild(tmp);
+      google.accounts.id.renderButton(tmp, { type:'standard' });
+      const btn = tmp.querySelector('[role="button"]');
+      if (btn) btn.click();
+      setTimeout(() => tmp.remove(), 4000);
+    }
+  });
+}
+
+function logout() {
+  currentUser = null;
+  try { sessionStorage.removeItem('tmu_user'); } catch { /* ignore */ }
+  if (window.google) google.accounts.id.disableAutoSelect();
+  updateUserUI();
+  showToast('Sesión cerrada');
+  document.getElementById('dropdownMenu').classList.add('hidden');
+}
+
+function updateUserUI() {
+  const avatar = document.getElementById('avatarImg');
+  const dot = document.getElementById('userDot');
+  const nameEl = document.getElementById('dropdownName');
+  const loginBtn = document.getElementById('loginBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (currentUser) {
+    avatar.src = currentUser.photo || `https://ui-avatars.com/api/?background=5BABCC&color=fff&name=${encodeURIComponent(currentUser.name)}&size=80`;
+    avatar.onerror = () => { avatar.src = `https://ui-avatars.com/api/?background=5BABCC&color=fff&name=${encodeURIComponent(currentUser.name)}&size=80`; };
+    dot.classList.add('visible');
+    nameEl.textContent = currentUser.name;
+    loginBtn.style.display = 'none';
+    logoutBtn.style.display = 'block';
+  } else {
+    avatar.src = 'https://ui-avatars.com/api/?background=C4D0DC&color=fff&name=U&size=80';
+    dot.classList.remove('visible');
+    nameEl.textContent = 'Sin sesión';
+    loginBtn.style.display = 'block';
+    logoutBtn.style.display = 'none';
+  }
+}
+
+// ── MAP ───────────────────────────────────────────────────────────
+function initMap() {
+  mapInstance = L.map('map', { zoomControl:false, attributionControl:false })
+    .setView([CONFIG.DEFAULT_LAT, CONFIG.DEFAULT_LNG], CONFIG.DEFAULT_ZOOM);
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    maxZoom:19, minZoom:10
+  }).addTo(mapInstance);
+
+  mapInstance.on('zoomend', syncZoomSlider);
+  syncZoomSlider();
+  renderAllPosts();
+}
+
+function syncZoomSlider() {
+  if (!mapInstance) return;
+  const z = mapInstance.getZoom();
+  const slider = document.getElementById('zoomSlider');
+  const fill = document.getElementById('zoomFill');
+  slider.value = z;
+  const pct = ((z - CONFIG.MIN_ZOOM) / (CONFIG.MAX_ZOOM - CONFIG.MIN_ZOOM)) * 100;
+  fill.style.height = pct + '%';
+}
+
+function renderAllPosts() {
+  if (!mapInstance) return;
+  markersLayer.forEach(m => mapInstance.removeLayer(m));
+  markersLayer = [];
+
+  allPosts.forEach(post => {
+    if (!post.lat || !post.lng) return;
+    const expired = isExpired(post);
+    const emoji = post.type === 'ofrezco' ? '🙌' : '🤝';
+    const cls = expired ? 'cm-resolved' : (post.type === 'ofrezco' ? 'cm-ofrezco' : 'cm-necesito');
+    const iconHtml = `<div class="cm ${cls}">${emoji}</div>`;
+    const icon = L.divIcon({ html:iconHtml, className:'custom-div-icon', iconSize:[38,38], popupAnchor:[0,-20] });
+    const marker = L.marker([post.lat, post.lng], { icon });
+
+    const rem = computeRemaining(post);
+    const typeBadgeClass = expired ? 'badge-resolved' : (post.type==='ofrezco' ? 'badge-ofrezco' : 'badge-necesito');
+    const typeText = expired ? '🔒 Cerrado' : (post.type==='ofrezco' ? '🙌 Ofrezco' : '🤝 Necesito');
+    const catText = post.category==='producto' ? '📦 Producto' : '⚙️ Servicio';
+
+    const popup = `
+      <div class="minicard">
+        <div class="minicard-top">
+          <img class="minicard-photo" src="${post.userPhoto||''}" onerror="this.src='https://ui-avatars.com/api/?background=C4D0DC&color=fff&name=U&size=60'">
+          <span class="minicard-name">${sanitize(post.userName)}</span>
+        </div>
+        <div class="minicard-badges">
+          <span class="badge ${typeBadgeClass}">${typeText}</span>
+          <span class="badge badge-cat">${catText}</span>
+        </div>
+        <div class="minicard-desc">${sanitize(post.description)}</div>
+        ${expired
+          ? `<div class="resolved-notice">✅ Caso finalizado</div>`
+          : `<div class="mc-countdown">
+              <div class="cbar"><div class="cbar-fill ${rem.cls}" style="width:${rem.percent}%"></div></div>
+              <div class="cbar-text">⏳ ${rem.text}</div>
+            </div>`
+        }
+        <button class="mc-btn" data-id="${post.id}">Ver detalle →</button>
+      </div>`;
+
+    marker.bindPopup(popup, { closeButton:false, maxWidth:260 });
+    marker.on('popupopen', () => {
+      setTimeout(() => {
+        const btn = document.querySelector(`.mc-btn[data-id="${post.id}"]`);
+        if (btn) btn.onclick = () => { openDetail(post); mapInstance.closePopup(); };
+      }, 40);
+    });
+
+    marker.addTo(mapInstance);
+    markersLayer.push(marker);
+  });
+}
+
+// ── DETAIL MODAL ──────────────────────────────────────────────────
+function openDetail(post) {
+  const expired = isExpired(post);
+  const rem = computeRemaining(post);
+  const isOwner = currentUser && post.userId === currentUser.id;
+  const typeBadgeClass = expired ? 'badge-resolved' : (post.type==='ofrezco' ? 'badge-ofrezco' : 'badge-necesito');
+  const typeText = post.type==='ofrezco' ? '🙌 Ofrezco' : '🤝 Necesito';
+  const catText = post.category==='producto' ? '📦 Producto' : '⚙️ Servicio';
+  const dateStr = new Date(post.createdAt).toLocaleDateString('es-AR',{day:'numeric',month:'long'});
+
+  let ctaHtml = '';
+  if (expired) {
+    ctaHtml = `<div class="resolved-notice">🔒 Esta publicación ya está cerrada o vencida</div>`;
+  } else if (isOwner && post.phone) {
+    ctaHtml = `<div class="own-phone-notice">📱 Tu número: +54 ${post.phone}<br><small style="font-weight:500;opacity:0.8">Así te contactarán quienes quieran ayudar</small></div>`;
+  } else if (!isOwner && post.phone) {
+    const msg = `Hola ${encodeURIComponent(post.userName)}, vi tu publicación en Tu Mano a Uno: ${encodeURIComponent(post.description)}`;
+    ctaHtml = `<a class="btn-whatsapp" href="https://wa.me/54${post.phone}?text=${msg}" target="_blank">📱 Contactar por WhatsApp</a>`;
+  } else if (!isOwner) {
+    ctaHtml = `<div class="resolved-notice" style="background:var(--blue-xlight);color:var(--blue-dark);">ℹ️ El usuario no dejó teléfono de contacto</div>`;
+  }
+
+  document.getElementById('detailTitle').textContent = expired ? 'Caso cerrado' : (post.type==='ofrezco' ? 'Ofrece ayuda' : 'Solicita ayuda');
+  document.getElementById('detailContent').innerHTML = `
+    <div class="detail-hero">
+      <img class="detail-photo" src="${post.userPhoto||''}" onerror="this.src='https://ui-avatars.com/api/?background=C4D0DC&color=fff&name=U&size=100'">
+      <div class="detail-info">
+        <div class="detail-name">${sanitize(post.userName)}</div>
+        <div class="detail-date">📍 ${sanitize(post.locationName||'')} · ${dateStr}</div>
+      </div>
+    </div>
+    <div class="detail-badges">
+      <span class="badge ${typeBadgeClass}">${typeText}</span>
+      <span class="badge badge-cat">${catText}</span>
+    </div>
+    <div class="detail-desc">${sanitize(post.description)}</div>
+    ${!expired ? `
+      <div class="detail-countdown">
+        <div class="detail-cbar">
+          <div class="detail-cbar-fill ${rem.cls}" id="detailCbar" style="width:${rem.percent}%"></div>
+        </div>
+        <div class="detail-cbar-label" id="detailCbarLabel">⏳ ${rem.text}</div>
+      </div>` : ''}
+    ${ctaHtml}
+  `;
+  document.getElementById('detailModal').classList.remove('hidden');
+
+  // Live countdown in detail
+  if (!expired) {
+    const iv = setInterval(() => {
+      const r = computeRemaining(post);
+      const cbar = document.getElementById('detailCbar');
+      const lbl = document.getElementById('detailCbarLabel');
+      if (!cbar || !lbl) { clearInterval(iv); return; }
+      cbar.style.width = r.percent+'%';
+      cbar.className = `detail-cbar-fill ${r.cls}`;
+      lbl.textContent = `⏳ ${r.text}`;
+      if (r.percent <= 0) clearInterval(iv);
+    }, 30000);
+    countdownIntervals.push(iv);
+  }
+}
+
+// ── LOCATION ──────────────────────────────────────────────────────
+async function reverseCity(lat, lng) {
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10`);
+    const d = await r.json();
+    return d.address?.city || d.address?.town || d.address?.village || 'Buenos Aires';
+  } catch { return 'Buenos Aires'; }
+}
+
+function getUserLocation() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) { reject('no-geolocation'); return; }
+    navigator.geolocation.getCurrentPosition(
+      p => resolve({ lat:p.coords.latitude, lng:p.coords.longitude }),
+      () => reject('denied'),
+      { enableHighAccuracy:true, timeout:10000 }
+    );
+  });
+}
+
+async function initLocation() {
+  try {
+    const pos = await getUserLocation();
+    currentLocationCoords = pos;
+    mapInstance.setView([pos.lat, pos.lng], 13);
+    const city = await reverseCity(pos.lat, pos.lng);
+    document.getElementById('cityLabel').textContent = city;
+  } catch {
+    document.getElementById('cityLabel').textContent = 'Buenos Aires';
+  }
+}
+
+// ── PUBLISH FORM ──────────────────────────────────────────────────
+async function openPublishModal() {
+  if (!currentUser) {
+    showToast('Iniciá sesión para publicar', 'error');
+    signIn();
+    return;
+  }
+  document.getElementById('postDesc').value = '';
+  document.getElementById('postPhone').value = '';
+  document.getElementById('descCounter').textContent = '0 / 300';
+  document.getElementById('publishBtn').disabled = true;
+  document.getElementById('locDot').className = 'loc-dot';
+  document.getElementById('locText').textContent = 'Obteniendo ubicación…';
+  document.getElementById('postModal').classList.remove('hidden');
+
+  try {
+    const pos = await getUserLocation();
+    currentFormLocation = pos;
+    const city = await reverseCity(pos.lat, pos.lng);
+    currentFormLocation.city = city;
+    document.getElementById('locDot').className = 'loc-dot ok';
+    document.getElementById('locText').textContent = `📍 ${city}`;
+    document.getElementById('publishBtn').disabled = false;
+  } catch {
+    document.getElementById('locDot').className = 'loc-dot err';
+    document.getElementById('locText').textContent = 'Permiso denegado — no podés publicar sin ubicación';
+    document.getElementById('publishBtn').disabled = true;
+  }
+}
+
+async function publishPost() {
+  if (!currentFormLocation) { showToast('Ubicación no disponible', 'error'); return; }
+  const desc = document.getElementById('postDesc').value.trim();
+  const phone = document.getElementById('postPhone').value.replace(/\D/g,'');
+  if (desc.length < 5) { showToast('Descripción muy corta (mínimo 5 caracteres)', 'error'); return; }
+
+  const btn = document.getElementById('publishBtn');
+  btn.innerHTML = '<span class="spinner"></span> Publicando…';
+  btn.disabled = true;
+
+  await new Promise(r => setTimeout(r, 600)); // simulate async
+
+  const newPost = {
+    id: 'p' + Date.now(),
+    userId: currentUser.id,
+    userName: currentUser.name,
+    userPhoto: currentUser.photo,
+    type: activeFormType,
+    category: activeFormCat,
+    description: desc,
+    phone,
+    lat: currentFormLocation.lat,
+    lng: currentFormLocation.lng,
+    locationName: currentFormLocation.city || 'Tu ciudad',
+    createdAt: Date.now(),
+    durationHours: 24,
+    solved: false,
+  };
+  allPosts.unshift(newPost);
+  renderAllPosts();
+  document.getElementById('postModal').classList.add('hidden');
+  showToast('¡Publicación creada! Ya aparece en el mapa.', 'success');
+
+  btn.innerHTML = 'Publicar';
+  btn.disabled = false;
+}
+
+// ── CITY PICKER ───────────────────────────────────────────────────
+function toggleCityPicker() {
+  document.getElementById('cityPicker').classList.toggle('hidden');
+}
+
+function selectCity(lat, lng, name) {
+  mapInstance.setView([lat, lng], 12);
+  document.getElementById('cityLabel').textContent = name;
+  document.getElementById('cityPicker').classList.add('hidden');
+  document.querySelectorAll('.city-option').forEach(b => b.classList.remove('active'));
+}
+
+// ── EVENTS ────────────────────────────────────────────────────────
+function bindEvents() {
+  // Avatar dropdown
+  document.getElementById('avatarWrap').onclick = e => {
+    e.stopPropagation();
+    document.getElementById('dropdownMenu').classList.toggle('hidden');
+  };
+  document.addEventListener('click', () => {
+    document.getElementById('dropdownMenu').classList.add('hidden');
+    document.getElementById('cityPicker').classList.add('hidden');
+  });
+  document.getElementById('loginBtn').onclick = e => { e.stopPropagation(); signIn(); };
+  document.getElementById('logoutBtn').onclick = e => { e.stopPropagation(); logout(); };
+
+  // Donate
+  document.getElementById('donarBtn').onclick = () => document.getElementById('donateModal').classList.remove('hidden');
+  document.getElementById('closeDonateModal').onclick = () => document.getElementById('donateModal').classList.add('hidden');
+  document.getElementById('copyCvuBtn').onclick = () => {
+    navigator.clipboard?.writeText(CONFIG.CVU).catch(()=>{});
+    showToast('CVU copiado 📋', 'success');
+  };
+
+  // FAB / Publish
+  document.getElementById('fabBtn').onclick = openPublishModal;
+  document.getElementById('closePostModal').onclick = () => document.getElementById('postModal').classList.add('hidden');
+  document.getElementById('publishBtn').onclick = publishPost;
+
+  // Detail
+  document.getElementById('closeDetailModal').onclick = () => {
+    document.getElementById('detailModal').classList.add('hidden');
+    countdownIntervals.forEach(clearInterval);
+    countdownIntervals = [];
+  };
+
+  // Form toggles
+  document.getElementById('tipoOfrezco').onclick = () => setFormType('ofrezco');
+  document.getElementById('tipoNecesito').onclick = () => setFormType('necesito');
+  document.getElementById('catProducto').onclick = () => setFormCat('producto');
+  document.getElementById('catServicio').onclick = () => setFormCat('servicio');
+
+  // Desc counter
+  document.getElementById('postDesc').oninput = e => {
+    document.getElementById('descCounter').textContent = `${e.target.value.length} / 300`;
+  };
+
+  // City picker
+  document.getElementById('citySelectBtn').onclick = e => {
+    e.stopPropagation();
+    document.getElementById('cityPicker').classList.toggle('hidden');
+  };
+  document.getElementById('cityPicker').onclick = e => e.stopPropagation();
+  document.querySelectorAll('.city-option').forEach(btn => {
+    btn.onclick = async () => {
+      const lat = parseFloat(btn.dataset.lat);
+      const lng = parseFloat(btn.dataset.lng);
+      const name = btn.dataset.name;
+      if (btn.id === 'myLocationOption') {
+        document.getElementById('cityLabel').textContent = 'Detectando…';
+        document.getElementById('cityPicker').classList.add('hidden');
+        try {
+          const pos = await getUserLocation();
+          const city = await reverseCity(pos.lat, pos.lng);
+          currentLocationCoords = pos;
+          mapInstance.setView([pos.lat, pos.lng], 13);
+          document.getElementById('cityLabel').textContent = city;
+        } catch {
+          showToast('No se pudo detectar tu ubicación', 'error');
+          document.getElementById('cityLabel').textContent = 'Buenos Aires';
+        }
+        return;
+      }
+      selectCity(lat, lng, name);
+    };
+  });
+
+  // Zoom controls
+  document.getElementById('zoomInBtn').onclick = () => { mapInstance.zoomIn(); };
+  document.getElementById('zoomOutBtn').onclick = () => { mapInstance.zoomOut(); };
+  document.getElementById('zoomSlider').oninput = e => {
+    mapInstance.setZoom(parseInt(e.target.value));
+  };
+
+  // Close modals on overlay click
+  ['postModal','detailModal','donateModal'].forEach(id => {
+    document.getElementById(id).onclick = e => {
+      if (e.target === document.getElementById(id)) {
+        document.getElementById(id).classList.add('hidden');
+      }
+    };
+  });
+}
+
+function setFormType(type) {
+  activeFormType = type;
+  document.getElementById('tipoOfrezco').classList.toggle('active', type==='ofrezco');
+  document.getElementById('tipoNecesito').classList.toggle('active', type==='necesito');
+}
+
+function setFormCat(cat) {
+  activeFormCat = cat;
+  document.getElementById('catProducto').classList.toggle('active', cat==='producto');
+  document.getElementById('catServicio').classList.toggle('active', cat==='servicio');
+}
+
+// ── BOOT ──────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  initMap();
+  bindEvents();
+  initGoogleAuth();
+  initLocation();
+
+  // Service Worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(()=>{});
+  }
+});
 </script>
 </body>
 </html>
