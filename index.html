@@ -2,189 +2,723 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#7EC8E3" />
   <meta name="description" content="Tu Mano a Uno – Conectá con personas que necesitan o pueden ofrecer ayuda en tu comunidad." />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="Tu Mano a Uno" />
-  <!-- CSP Security -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://accounts.google.com; frame-src https://accounts.google.com;" />
-  <title>Tu Mano a Uno</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="icons/icon-192.png" />
-  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <title>Tu Mano a Uno | Ayuda en tu comunidad</title>
+  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css" />
-</head>
-<body>
-
-  <!-- LOGIN SCREEN -->
-  <div id="login-screen" class="screen active">
-    <div class="login-container">
-      <div class="login-logo">
-        <img src="icons/logo.png" alt="Tu Mano a Uno" class="login-logo-img" onerror="this.style.display='none'; document.getElementById('login-logo-fallback').style.display='block'" />
-        <div id="login-logo-fallback" class="login-logo-fallback" style="display:none">
-          <span class="logo-hand">🤝</span>
-        </div>
-        <h1>Tu Mano a Uno</h1>
-        <p>Conectá con tu comunidad.<br>Ofrecé o pedí ayuda cerca tuyo.</p>
-      </div>
-      <button id="btn-google-login" class="btn-google">
-        <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
-        Continuar con Google
-      </button>
-      <p class="login-disclaimer">Al ingresar aceptás los <a href="#" id="link-terms">términos de uso</a>. Tus datos están protegidos y no se comparten con terceros.</p>
-    </div>
-  </div>
-
-  <!-- MAIN APP -->
-  <div id="app-screen" class="screen">
-
-    <!-- HEADER -->
-    <header class="app-header">
-      <div class="header-left">
-        <img src="icons/logo.png" alt="Tu Mano a Uno" class="header-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'" />
-        <span class="header-logo-fallback" style="display:none">🤝 Tu Mano a Uno</span>
-      </div>
-      <div class="header-right">
-        <button id="btn-donar" class="btn-donar">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-          Donar
-        </button>
-        <div id="user-avatar-wrap" class="user-avatar-wrap">
-          <img id="user-avatar" src="" alt="Tu foto" class="user-avatar" />
-          <div id="user-menu" class="user-menu hidden">
-            <div id="user-menu-name" class="user-menu-name"></div>
-            <button id="btn-logout" class="user-menu-logout">Cerrar sesión</button>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <!-- CITY BAR -->
-    <div class="city-bar">
-      <span id="city-label" class="city-label">Cargando tu ubicación…</span>
-      <div class="city-controls">
-        <select id="city-select" class="city-select" aria-label="Cambiar ciudad">
-          <option value="">Tu ciudad</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- MAP -->
-    <div id="map" class="map-container" aria-label="Mapa de pedidos y ofrecimientos cercanos"></div>
-
-    <!-- ZOOM CONTROLS (custom) -->
-    <div class="map-zoom-controls">
-      <button id="zoom-in" class="zoom-btn" aria-label="Acercar">+</button>
-      <button id="zoom-out" class="zoom-btn" aria-label="Alejar">−</button>
-    </div>
-
-    <!-- FAB -->
-    <button id="btn-fab" class="fab" aria-label="Ofrecé o solicitá ayuda">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      <span>Ofrecé o solicitá aquí</span>
-    </button>
-
-  </div>
-
-  <!-- FORM MODAL -->
-  <div id="form-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="form-modal-title">
-    <div class="modal-container">
-      <button class="modal-close" id="modal-close-btn" aria-label="Cerrar">×</button>
-      <h2 id="form-modal-title">Nueva publicación</h2>
-
-      <div class="form-user-info">
-        <img id="form-user-photo" src="" alt="" class="form-user-photo" />
-        <span id="form-user-name" class="form-user-name"></span>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">¿Qué querés hacer?</label>
-        <div class="toggle-switch" role="group" aria-label="Tipo de publicación">
-          <button class="toggle-option active" data-value="ofrezco" id="toggle-ofrezco">Ofrezco</button>
-          <button class="toggle-option" data-value="necesito" id="toggle-necesito">Necesito</button>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Tipo</label>
-        <div class="toggle-switch" role="group" aria-label="Tipo de ayuda">
-          <button class="toggle-option active" data-value="producto" id="toggle-producto">Producto</button>
-          <button class="toggle-option" data-value="servicio" id="toggle-servicio">Servicio</button>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" for="form-descripcion">Descripción <span id="char-count" class="char-count">0/300</span></label>
-        <textarea id="form-descripcion" class="form-textarea" placeholder="Describí brevemente lo que ofrecés o necesitás…" maxlength="300" rows="4"></textarea>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" for="form-celular">Celular (WhatsApp)</label>
-        <div class="input-phone-wrap">
-          <span class="phone-prefix">+54</span>
-          <input type="tel" id="form-celular" class="form-input phone-input" placeholder="1137881082" maxlength="14" pattern="[0-9]+" inputmode="numeric" />
-        </div>
-        <p class="form-hint">Sin 0, sin 15. Ejemplo: 1137881082</p>
-      </div>
-
-      <div id="location-status" class="location-status">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span id="location-text">Obteniendo tu ubicación…</span>
-      </div>
-
-      <button id="btn-publicar" class="btn-publicar" disabled>
-        <span id="btn-publicar-text">Publicar</span>
-        <svg id="btn-publicar-spinner" class="spinner hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-      </button>
-    </div>
-  </div>
-
-  <!-- CARD DETAIL MODAL -->
-  <div id="card-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="card-modal-title">
-    <div class="modal-container modal-card-detail">
-      <button class="modal-close" id="card-modal-close" aria-label="Cerrar">×</button>
-      <div id="card-modal-content"></div>
-    </div>
-  </div>
-
-  <!-- DONAR MODAL -->
-  <div id="donar-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="donar-modal-title">
-    <div class="modal-container modal-donar">
-      <button class="modal-close" id="donar-modal-close" aria-label="Cerrar">×</button>
-      <div class="donar-content">
-        <div class="donar-heart">💙</div>
-        <h2 id="donar-modal-title">¡Gracias por considerar donar!</h2>
-        <p>Tu ayuda nos permite mantener este proyecto vivo y gratuito para toda la comunidad.</p>
-        <div class="cvu-box">
-          <span class="cvu-label">CVU</span>
-          <span class="cvu-value" id="cvu-value">0000003100040849915686</span>
-          <button id="btn-copy-cvu" class="btn-copy-cvu" aria-label="Copiar CVU">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            <span id="cvu-copy-text">Copiar</span>
-          </button>
-        </div>
-        <p class="donar-alias">Alias: <strong>tumanoauno.donacion</strong></p>
-      </div>
-    </div>
-  </div>
-
-  <!-- TOAST -->
-  <div id="toast" class="toast hidden" role="alert" aria-live="polite"></div>
-
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="js/config.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/api.js"></script>
-  <script src="js/map.js"></script>
-  <script src="js/app.js"></script>
-
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
   <!-- Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #F4F7FC;
+      height: 100vh;
+      overflow: hidden;
+      color: #1E2F3E;
+    }
+
+    /* MAIN APP SCREEN (siempre visible) */
+    .app-main {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100%;
+    }
+
+    /* HEADER */
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: white;
+      padding: 12px 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      z-index: 10;
+      border-bottom: 1px solid #E2E8F0;
+    }
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-icon {
+      background: #7EC8E3;
+      width: 38px;
+      height: 38px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .logo-text {
+      font-weight: 800;
+      font-size: 1.3rem;
+      background: linear-gradient(135deg, #2C7DA0, #61A5C2);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .btn-donar-sm {
+      background: #FFE9D6;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      color: #C76E1C;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-donar-sm:hover { background: #FFDDBB; }
+    .user-area {
+      position: relative;
+      cursor: pointer;
+    }
+    .user-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 100%;
+      object-fit: cover;
+      border: 2px solid #7EC8E3;
+      background: #F0F4F8;
+    }
+    .user-menu {
+      position: absolute;
+      right: 0;
+      top: 50px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+      width: 200px;
+      padding: 12px;
+      z-index: 200;
+      border: 1px solid #E2E8F0;
+    }
+    .user-menu.hidden { display: none; }
+    .user-menu-name {
+      font-weight: 600;
+      border-bottom: 1px solid #EDF2F7;
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+    }
+    .logout-btn {
+      background: none;
+      border: none;
+      color: #E53E3E;
+      font-weight: 500;
+      width: 100%;
+      text-align: left;
+      padding: 8px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+    .logout-btn:hover { background: #FFF5F5; }
+
+    /* CITY BAR */
+    .city-bar {
+      background: #FFFFFFCC;
+      backdrop-filter: blur(8px);
+      margin: 10px 16px;
+      padding: 8px 16px;
+      border-radius: 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: absolute;
+      top: 70px;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      pointer-events: auto;
+    }
+    .city-label {
+      font-weight: 600;
+      font-size: 0.85rem;
+      background: #F1F5F9;
+      padding: 4px 12px;
+      border-radius: 30px;
+    }
+    .city-select {
+      background: transparent;
+      border: none;
+      font-weight: 500;
+      font-size: 0.8rem;
+      padding: 6px;
+      border-radius: 20px;
+    }
+
+    /* MAP */
+    .map-container {
+      flex: 1;
+      width: 100%;
+      z-index: 1;
+    }
+    .custom-zoom {
+      position: absolute;
+      bottom: 100px;
+      right: 16px;
+      z-index: 500;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .zoom-btn {
+      background: white;
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 40px;
+      font-size: 24px;
+      font-weight: bold;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      cursor: pointer;
+      transition: 0.1s;
+    }
+    .fab {
+      position: absolute;
+      bottom: 24px;
+      left: 20px;
+      right: 20px;
+      background: #2C7DA0;
+      border: none;
+      padding: 14px;
+      border-radius: 60px;
+      color: white;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 1rem;
+      box-shadow: 0 4px 15px rgba(44,125,160,0.4);
+      z-index: 30;
+      cursor: pointer;
+    }
+
+    /* MODALES */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(3px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hidden { display: none; }
+    .modal-container {
+      background: white;
+      width: 90%;
+      max-width: 500px;
+      border-radius: 32px;
+      padding: 24px;
+      max-height: 85vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      right: 20px;
+      top: 16px;
+      background: none;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+    }
+    .toggle-group {
+      display: flex;
+      gap: 12px;
+      margin: 12px 0;
+    }
+    .toggle-opt {
+      flex: 1;
+      background: #EDF2F7;
+      border: none;
+      padding: 10px;
+      border-radius: 50px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .toggle-opt.active {
+      background: #2C7DA0;
+      color: white;
+    }
+    textarea, .form-input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 20px;
+      border: 1px solid #CBD5E0;
+      font-family: inherit;
+      margin-top: 4px;
+    }
+    .btn-publicar {
+      background: #2C7DA0;
+      color: white;
+      border: none;
+      width: 100%;
+      padding: 14px;
+      border-radius: 40px;
+      font-weight: bold;
+      margin-top: 16px;
+    }
+    .btn-publicar:disabled { opacity: 0.6; }
+    .location-status { font-size: 0.75rem; margin: 12px 0; display: flex; gap: 6px; align-items: center; }
+
+    /* MARKER PERSONALIZADO */
+    .custom-div-icon {
+      background: transparent;
+      border: none;
+    }
+    .custom-marker {
+      width: 42px;
+      height: 42px;
+      border-radius: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+      border: 2px solid white;
+      font-size: 20px;
+    }
+    .marker-resuelto {
+      filter: grayscale(0.6);
+      opacity: 0.75;
+    }
+    /* popup minicard */
+    .minicard {
+      width: 240px;
+      font-family: 'Inter', sans-serif;
+    }
+    .minicard-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .minicard-photo {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+    .minicard-badges {
+      display: flex;
+      gap: 6px;
+      margin: 6px 0;
+    }
+    .badge-ofrezco { background: #C7F2F0; color: #0F5C6B; }
+    .badge-necesito { background: #FFE3C9; color: #B45309; }
+    .badge-resuelto { background: #CBD5E0; color: #2D3748; }
+    .minicard-desc {
+      font-size: 0.8rem;
+      margin: 8px 0;
+    }
+    .countdown-bar {
+      height: 6px;
+      background: #E2E8F0;
+      border-radius: 10px;
+      margin: 6px 0;
+    }
+    .countdown-fill {
+      height: 6px;
+      border-radius: 10px;
+      background: #48BB78;
+    }
+    .fill-critical { background: #E53E3E; }
+    .fill-urgent { background: #ED8936; }
+    .toast {
+      position: fixed;
+      bottom: 90px;
+      left: 20px;
+      right: 20px;
+      background: #1A202C;
+      color: white;
+      padding: 12px;
+      border-radius: 60px;
+      text-align: center;
+      z-index: 1200;
+    }
+    hr { margin: 12px 0; }
+    .btn-whatsapp {
+      display: block;
+      background: #25D366;
+      text-align: center;
+      padding: 10px;
+      border-radius: 40px;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<div class="app-main" id="appContainer">
+  <header class="app-header">
+    <div class="logo-area">
+      <div class="logo-icon">🤝</div>
+      <div class="logo-text">Tu Mano a Uno</div>
+    </div>
+    <div class="header-actions">
+      <button id="donarBtnHeader" class="btn-donar-sm">❤️ Donar</button>
+      <div class="user-area" id="userAvatarWrap">
+        <img id="userAvatarImg" class="user-avatar" src="https://ui-avatars.com/api/?background=7EC8E3&color=fff&name=Usuario" alt="avatar">
+        <div id="userMenuDropdown" class="user-menu hidden">
+          <div id="userNameDisplay" class="user-menu-name"></div>
+          <button id="logoutBtnHeader" class="logout-btn">Cerrar sesión</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="city-bar">
+    <span id="cityNameLabel" class="city-label">Cargando...</span>
+    <select id="citySelector" class="city-select">
+      <option value="">Mi ubicación</option>
+      <option value="-34.6118,-58.3960">Buenos Aires</option>
+      <option value="-31.4201,-64.1888">Córdoba</option>
+      <option value="-32.9468,-60.6393">Rosario</option>
+    </select>
+  </div>
+
+  <div id="map" class="map-container"></div>
+  <div class="custom-zoom">
+    <button id="zoomInBtn" class="zoom-btn">+</button>
+    <button id="zoomOutBtn" class="zoom-btn">−</button>
+  </div>
+  <button id="fabBtn" class="fab">➕ Ofrecé o solicitá aquí</button>
+</div>
+
+<!-- MODAL PUBLICAR -->
+<div id="postModal" class="modal-overlay hidden">
+  <div class="modal-container">
+    <button class="modal-close" id="closeModalBtn">×</button>
+    <h3>Nueva ayuda</h3>
+    <div style="display:flex; gap: 10px; margin: 15px 0;">
+      <button id="tipoOfrezco" class="toggle-opt active">🙌 Ofrezco</button>
+      <button id="tipoNecesito" class="toggle-opt">🤝 Necesito</button>
+    </div>
+    <div style="display:flex; gap: 10px; margin-bottom: 15px;">
+      <button id="catProducto" class="toggle-opt active">📦 Producto</button>
+      <button id="catServicio" class="toggle-opt">⚙️ Servicio</button>
+    </div>
+    <textarea id="postDescripcion" rows="3" placeholder="Descripción (ej: dono ropa, necesito ayuda con compras)"></textarea>
+    <div style="margin: 12px 0;">
+      <label>WhatsApp (sin 0 ni 15): +54 </label>
+      <input type="tel" id="postPhone" placeholder="1137881082" class="form-input">
+    </div>
+    <div id="modalLocationStatus" class="location-status">📍 Buscando ubicación...</div>
+    <button id="publishBtn" class="btn-publicar" disabled>Publicar</button>
+  </div>
+</div>
+
+<!-- MODAL DETALLE -->
+<div id="detailModal" class="modal-overlay hidden">
+  <div class="modal-container">
+    <button class="modal-close" id="closeDetailBtn">×</button>
+    <div id="detailContent"></div>
+  </div>
+</div>
+
+<!-- MODAL DONAR -->
+<div id="donationModal" class="modal-overlay hidden">
+  <div class="modal-container" style="text-align:center">
+    <button class="modal-close" id="closeDonationBtn">×</button>
+    <div style="font-size:40px">💙</div>
+    <h3>¡Gracias por apoyar!</h3>
+    <p>Tu donación mantiene la comunidad activa y gratuita.</p>
+    <div style="background:#F1F5F9; border-radius: 40px; padding: 12px; margin:12px 0">
+      <strong>CVU: 0000003100040849915686</strong>
+      <button id="copyCvuBtn" style="margin-left: 8px;">📋 Copiar</button>
+    </div>
+    <p>Alias: <strong>tumanoauno.donacion</strong></p>
+  </div>
+</div>
+<div id="toastMsg" class="toast hidden"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  // --------------------------------------------------------------
+  //  SIMULACIÓN DE POSTS (activos + vencidos/resueltos en gris)
+  // --------------------------------------------------------------
+  const MOCK_POSTS = [
+    {
+      id: "p1", userId: "mock1", userName: "Carolina Méndez", userPhoto: "https://randomuser.me/api/portraits/women/68.jpg",
+      type: "ofrezco", category: "producto", description: "Juguetes didácticos en buen estado. Zona Almagro.",
+      lat: -34.6068, lng: -58.4210, phone: "1156781234", createdAt: Date.now() - 3600000,
+      locationName: "Almagro, CABA", durationHours: 24, solved: false
+    },
+    {
+      id: "p2", userId: "mock2", userName: "José Rojas", userPhoto: "https://randomuser.me/api/portraits/men/32.jpg",
+      type: "necesito", category: "servicio", description: "Necesito profesor de matemáticas para secundario, 2 veces por semana.",
+      lat: -34.5880, lng: -58.3980, phone: "1134556677", createdAt: Date.now() - 2*3600000,
+      locationName: "Balvanera", durationHours: 24, solved: false
+    },
+    {
+      id: "p3", userId: "mock3", userName: "Lucía Ferreyra", userPhoto: "https://randomuser.me/api/portraits/women/44.jpg",
+      type: "ofrezco", category: "servicio", description: "Clases gratuitas de computación básica los sábados.",
+      lat: -34.6180, lng: -58.3680, phone: "1169876543", createdAt: Date.now() - 10*3600000,
+      locationName: "Palermo", durationHours: 24, solved: false
+    },
+    // PUBLICACIÓN VENCIDA / RESUELTA (GRIS)
+    {
+      id: "p4", userId: "mock4", userName: "Gabriel Soto", userPhoto: "https://randomuser.me/api/portraits/men/55.jpg",
+      type: "necesito", category: "producto", description: "Silla de ruedas en préstamo temporal (ya resuelto ✅).",
+      lat: -34.6280, lng: -58.4450, phone: "1122334455", createdAt: Date.now() - 48*3600000,
+      locationName: "Flores", durationHours: 24, solved: true, remainingPercent: 0, remainingTime: "Vencido"
+    },
+    {
+      id: "p5", userId: "mock5", userName: "Marta Giménez", userPhoto: "https://randomuser.me/api/portraits/women/90.jpg",
+      type: "ofrezco", category: "producto", description: "Ropa de abrigo para niños (donación finalizada).",
+      lat: -34.5690, lng: -58.4140, phone: "1165432109", createdAt: Date.now() - 72*3600000,
+      locationName: "Boedo", durationHours: 24, solved: true, remainingPercent: 0, remainingTime: "Cerrado"
+    }
+  ];
+
+  // Agregar tiempo restante a cada mock
+  function computeRemaining(post) {
+    if (post.solved) return { percent: 0, text: "✅ Resuelto / Vencido" };
+    const elapsed = (Date.now() - new Date(post.createdAt).getTime()) / (1000 * 3600);
+    const remainingHours = Math.max(0, post.durationHours - elapsed);
+    const percent = (remainingHours / post.durationHours) * 100;
+    if(remainingHours <= 0) return { percent: 0, text: "⏰ Expirado" };
+    return { percent: Math.min(100, percent), text: `${Math.ceil(remainingHours)}h restantes` };
+  }
+
+  // ------------------ APP GLOBAL ------------------------
+  let currentUser = null;
+  let mapInstance = null;
+  let markersLayer = [];
+  let currentLocationCoords = null;
+  let currentFormLocation = null;
+  let activeFormType = "ofrezco";
+  let activeFormCat = "producto";
+  let allPosts = [...MOCK_POSTS];
+
+  // helpers
+  function showToast(msg, type="info") {
+    const toast = document.getElementById('toastMsg');
+    toast.textContent = msg;
+    toast.classList.remove('hidden');
+    setTimeout(() => toast.classList.add('hidden'), 3000);
+  }
+
+  function sanitize(str) { if(!str) return ""; return String(str).replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+
+  // Renderizar marcadores en mapa
+  function renderAllPosts() {
+    if (!mapInstance) return;
+    markersLayer.forEach(m => mapInstance.removeLayer(m));
+    markersLayer = [];
+    allPosts.forEach(post => {
+      if (!post.lat || !post.lng) return;
+      const isExpiredOrResolved = post.solved || (Date.now() - new Date(post.createdAt).getTime() > post.durationHours * 3600000);
+      const markerColor = isExpiredOrResolved ? "#94A3B8" : (post.type === "ofrezco" ? "#4BA8CC" : "#e0873a");
+      const emoji = post.type === "ofrezco" ? "🙌" : "🤝";
+      const solvedText = isExpiredOrResolved ? " (Resuelto)" : "";
+      const iconHtml = `<div class="custom-marker" style="background:${markerColor}; opacity:${isExpiredOrResolved?0.7:1};"><div class="custom-marker-inner">${emoji}</div></div>`;
+      const icon = L.divIcon({ html: iconHtml, className: 'custom-div-icon', iconSize: [38,38], popupAnchor: [0,-15] });
+      const marker = L.marker([post.lat, post.lng], { icon });
+      const remaining = computeRemaining(post);
+      const typeClass = isExpiredOrResolved ? "badge-resuelto" : (post.type === "ofrezco" ? "badge-ofrezco" : "badge-necesito");
+      const typeText = isExpiredOrResolved ? "🔒 Resuelto" : (post.type === "ofrezco" ? "🙌 Ofrezco" : "🤝 Necesito");
+      const categoryText = post.category === "producto" ? "📦 Producto" : "⚙️ Servicio";
+      const fillClass = (remaining.percent < 20 && !isExpiredOrResolved) ? 'fill-critical' : (remaining.percent<50 && !isExpiredOrResolved) ? 'fill-urgent' : '';
+      const popupHTML = `
+        <div class="minicard">
+          <div class="minicard-top"><img class="minicard-photo" src="${post.userPhoto || 'https://ui-avatars.com/api/?background=ccc'}" onerror="this.src='https://ui-avatars.com/api/?background=ccc'"><strong>${sanitize(post.userName)}</strong></div>
+          <div class="minicard-badges"><span class="minicard-badge ${typeClass}" style="padding:4px 12px;border-radius:20px;">${typeText}</span> <span style="background:#E2E8F0;padding:4px 12px;border-radius:20px;">${categoryText}</span></div>
+          <div class="minicard-desc">${sanitize(post.description)}</div>
+          ${!isExpiredOrResolved ? `<div class="countdown-bar"><div class="countdown-fill ${fillClass}" style="width: ${remaining.percent}%"></div></div><div>⏳ ${remaining.text}</div>` : `<div style="color:#64748B;">✅ Caso finalizado</div>`}
+          <button class="ver-mas-detalle" data-id="${post.id}" style="margin-top:8px; background:#EFF3F6; border:none; padding:6px; border-radius:40px; width:100%;">Ver más</button>
+        </div>`;
+      marker.bindPopup(popupHTML);
+      marker.on('popupopen', () => {
+        setTimeout(() => {
+          const btn = document.querySelector('.ver-mas-detalle');
+          if(btn) btn.onclick = (e) => { e.stopPropagation(); openDetailModal(post); mapInstance.closePopup(); };
+        }, 50);
+      });
+      marker.addTo(mapInstance);
+      markersLayer.push(marker);
+    });
+  }
+
+  function openDetailModal(post) {
+    const isExpired = post.solved || (Date.now() - new Date(post.createdAt).getTime() > post.durationHours * 3600000);
+    const modal = document.getElementById('detailModal');
+    const content = document.getElementById('detailContent');
+    const owner = currentUser && post.userId === currentUser.id;
+    const whatsappLink = (!isExpired && post.phone && !owner) ? `https://wa.me/54${post.phone}?text=Hola%20${encodeURIComponent(post.userName)}%2C%20vi%20tu%20publicaci%C3%B3n%20en%20Tu%20Mano%20a%20Uno%3A%20${encodeURIComponent(post.description)}` : '#';
+    content.innerHTML = `
+      <div style="display:flex; gap:12px;"><img src="${post.userPhoto}" width="50" height="50" style="border-radius:50%"><div><strong>${sanitize(post.userName)}</strong><br>${new Date(post.createdAt).toLocaleDateString()}</div></div>
+      <div style="margin:12px 0"><span class="badge-${post.type}">${post.type === "ofrezco" ? "Ofrezco" : "Necesito"}</span> <span>${post.category}</span></div>
+      <p>${sanitize(post.description)}</p>
+      ${!isExpired && post.phone && !owner ? `<a href="${whatsappLink}" target="_blank" class="btn-whatsapp">📱 Contactar por WhatsApp</a>` : ''}
+      ${owner && post.phone ? `<p>📞 Tu celular: +54 ${post.phone}</p>` : ''}
+      ${isExpired ? '<p style="color:#718096">🔒 Esta publicación ya está cerrada o vencida</p>' : ''}
+    `;
+    modal.classList.remove('hidden');
+  }
+
+  // GEOLOCATION + CIUDAD
+  function reverseCity(lat,lng) {
+    return fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10`)
+      .then(r=>r.json()).then(data=> data.address?.city || data.address?.town || "Buenos Aires").catch(()=>"Buenos Aires");
+  }
+
+  function initMapAndLocation() {
+    if(mapInstance) return;
+    mapInstance = L.map('map').setView([-34.6118, -58.3960], 12);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: 'Map data &copy; OpenStreetMap' }).addTo(mapInstance);
+    if(navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        const lat = pos.coords.latitude, lng = pos.coords.longitude;
+        currentLocationCoords = {lat,lng};
+        mapInstance.setView([lat,lng], 13);
+        const city = await reverseCity(lat,lng);
+        document.getElementById('cityNameLabel').innerText = city;
+      }, () => { document.getElementById('cityNameLabel').innerText = "Buenos Aires"; });
+    } else { document.getElementById('cityNameLabel').innerText = "Buenos Aires"; }
+    renderAllPosts();
+  }
+
+  function centerToCity(lat,lng) { if(mapInstance) mapInstance.setView([lat,lng],12); }
+
+  // LOGIN Google (sin pantalla separada)
+  let googleClientId = "15579611596-cl542m98cnp2ti26ncotbifk2lbi3psn.apps.googleusercontent.com"; // reemplazar si es necesario
+  function initGoogleAuth() {
+    if(!window.google) setTimeout(initGoogleAuth,200);
+    else {
+      google.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: (response) => {
+          const payload = parseJwt(response.credential);
+          if(payload?.email) {
+            currentUser = { id: payload.sub, name: payload.name, email: payload.email, photo: payload.picture };
+            sessionStorage.setItem('tmu_user', JSON.stringify(currentUser));
+            updateUIForUser();
+            showToast(`Bienvenido ${currentUser.name}`);
+          }
+        }
+      });
+      const restore = sessionStorage.getItem('tmu_user');
+      if(restore) { currentUser = JSON.parse(restore); updateUIForUser(); }
+      else { updateUIForUser(); }
+    }
+  }
+
+  function parseJwt(token) { try { let base64 = token.split('.')[1]; return JSON.parse(atob(base64)); } catch(e){ return null; } }
+
+  function updateUIForUser() {
+    const avatar = document.getElementById('userAvatarImg');
+    const userNameSpan = document.getElementById('userNameDisplay');
+    if(currentUser) {
+      avatar.src = currentUser.photo || `https://ui-avatars.com/api/?background=7EC8E3&name=${currentUser.name}`;
+      userNameSpan.innerText = currentUser.name;
+    } else {
+      avatar.src = "https://ui-avatars.com/api/?background=7EC8E3&name=Usuario";
+      userNameSpan.innerText = "Invitado";
+    }
+  }
+
+  function signInGoogle() { if(window.google) google.accounts.id.prompt(); else showToast("Cargando login...","error"); }
+  function logout() { currentUser = null; sessionStorage.removeItem('tmu_user'); updateUIForUser(); showToast("Sesión cerrada"); }
+
+  // FORMULARIO PUBLICAR
+  async function getCurrentLocationForForm() {
+    return new Promise((resolve) => {
+      if(!navigator.geolocation) resolve(null);
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        const city = await reverseCity(loc.lat, loc.lng);
+        resolve({ ...loc, city });
+      }, () => resolve(null));
+    });
+  }
+
+  async function showPublishModal() {
+    if(!currentUser) { showToast("Inicia sesión con Google para publicar", "error"); signInGoogle(); return; }
+    document.getElementById('postModal').classList.remove('hidden');
+    document.getElementById('postDescripcion').value = "";
+    document.getElementById('postPhone').value = "";
+    const statusDiv = document.getElementById('modalLocationStatus');
+    statusDiv.innerHTML = "📍 Obteniendo ubicación...";
+    const loc = await getCurrentLocationForForm();
+    if(loc) {
+      currentFormLocation = loc;
+      statusDiv.innerHTML = `📍 ${loc.city}`;
+      document.getElementById('publishBtn').disabled = false;
+    } else { statusDiv.innerHTML = "⚠️ Permiso denegado. No podrás publicar sin ubicación."; document.getElementById('publishBtn').disabled = true; }
+  }
+
+  async function publishNewPost() {
+    if(!currentFormLocation) { showToast("Ubicación no disponible","error"); return; }
+    const desc = document.getElementById('postDescripcion').value.trim();
+    const phone = document.getElementById('postPhone').value.replace(/\D/g,'');
+    if(desc.length < 5) { showToast("Descripción muy corta (min 5 caracteres)"); return; }
+    const newPost = {
+      id: "p"+Date.now(), userId: currentUser.id, userName: currentUser.name, userPhoto: currentUser.photo,
+      type: activeFormType, category: activeFormCat, description: desc, phone: phone,
+      lat: currentFormLocation.lat, lng: currentFormLocation.lng, locationName: currentFormLocation.city,
+      createdAt: Date.now(), durationHours: 24, solved: false
+    };
+    allPosts.unshift(newPost);
+    renderAllPosts();
+    document.getElementById('postModal').classList.add('hidden');
+    showToast("¡Publicación creada! Aparecerá en el mapa.");
+  }
+
+  // EVENTOS Y LISTENERS
+  function bindEvents() {
+    document.getElementById('fabBtn').onclick = showPublishModal;
+    document.getElementById('closeModalBtn').onclick = () => document.getElementById('postModal').classList.add('hidden');
+    document.getElementById('closeDetailBtn').onclick = () => document.getElementById('detailModal').classList.add('hidden');
+    document.getElementById('donarBtnHeader').onclick = () => document.getElementById('donationModal').classList.remove('hidden');
+    document.getElementById('closeDonationBtn').onclick = () => document.getElementById('donationModal').classList.add('hidden');
+    document.getElementById('copyCvuBtn').onclick = () => { navigator.clipboard.writeText("0000003100040849915686"); showToast("CVU copiado"); };
+    document.getElementById('logoutBtnHeader').onclick = logout;
+    document.getElementById('userAvatarWrap').onclick = (e) => { e.stopPropagation(); document.getElementById('userMenuDropdown').classList.toggle('hidden'); };
+    document.addEventListener('click',()=> document.getElementById('userMenuDropdown').classList.add('hidden'));
+    document.getElementById('tipoOfrezco').onclick = () => { activeFormType="ofrezco"; document.getElementById('tipoOfrezco').classList.add('active'); document.getElementById('tipoNecesito').classList.remove('active'); };
+    document.getElementById('tipoNecesito').onclick = () => { activeFormType="necesito"; document.getElementById('tipoNecesito').classList.add('active'); document.getElementById('tipoOfrezco').classList.remove('active'); };
+    document.getElementById('catProducto').onclick = () => { activeFormCat="producto"; document.getElementById('catProducto').classList.add('active'); document.getElementById('catServicio').classList.remove('active'); };
+    document.getElementById('catServicio').onclick = () => { activeFormCat="servicio"; document.getElementById('catServicio').classList.add('active'); document.getElementById('catProducto').classList.remove('active'); };
+    document.getElementById('publishBtn').onclick = publishNewPost;
+    document.getElementById('zoomInBtn').onclick = () => mapInstance.zoomIn();
+    document.getElementById('zoomOutBtn').onclick = () => mapInstance.zoomOut();
+    document.getElementById('citySelector').onchange = (e) => {
+      if(e.target.value) { const [lat,lng] = e.target.value.split(',').map(Number); centerToCity(lat,lng); }
+      else if(navigator.geolocation) navigator.geolocation.getCurrentPosition(p=> centerToCity(p.coords.latitude,p.coords.longitude));
+    };
+  }
+
+  window.onload = () => {
+    initMapAndLocation();
+    bindEvents();
+    initGoogleAuth();
+  };
+</script>
 </body>
 </html>
