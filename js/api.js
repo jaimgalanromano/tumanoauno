@@ -4,8 +4,11 @@
 
 const API = (() => {
   
+  // URL base del Google Apps Script (reemplazar con tu deployment ID)
+  const BASE_URL = 'https://script.google.com/macros/s/AKfycbwbabkHpbxhqkbXfkDBcB4UkaJujnb6WUrHKbv5qDl7gSo7UWO0rthQ-pu5JusPHyhZ/exec';
+  
   async function request(action, data = {}, method = 'POST') {
-    const url = 'https://script.google.com/macros/s/AKfycbyKG12UBHcOXaOfqgbiwkrbmw-sMQoy8baA0H4oRzQ4HikZ-MjeTOB1emqJ0olnGsc5/exec';
+    const url = BASE_URL;
     const body = JSON.stringify({ action, ...data });
     
     try {
@@ -32,7 +35,7 @@ const API = (() => {
   
   // Obtener todos los posts activos
   async function getPosts(userId = null) {
-    let url = `${CONFIG.APPS_SCRIPT_URL}?action=getPosts`;
+    let url = `${BASE_URL}?action=getPosts`;
     if (userId) url += `&userId=${encodeURIComponent(userId)}`;
     
     try {
@@ -57,7 +60,7 @@ const API = (() => {
   
   // Obtener cantidad de posts del usuario hoy
   async function getUserPostsCount(userId) {
-    const url = `${CONFIG.APPS_SCRIPT_URL}?action=getUserPostsCount&userId=${encodeURIComponent(userId)}`;
+    const url = `${BASE_URL}?action=getUserPostsCount&userId=${encodeURIComponent(userId)}`;
     try {
       const response = await fetch(url);
       const result = await response.json();
