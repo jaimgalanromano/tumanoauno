@@ -1,1 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#7EC8E3" />
+  <meta name="description" content="Tu Mano a Uno – Conectá con personas que necesitan o pueden ofrecer ayuda en tu comunidad." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Tu Mano a Uno" />
+  <!-- CSP Security -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://accounts.google.com; frame-src https://accounts.google.com;" />
+  <title>Tu Mano a Uno</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
 
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen" class="screen active">
+    <div class="login-container">
+      <div class="login-logo">
+        <img src="icons/logo.png" alt="Tu Mano a Uno" class="login-logo-img" onerror="this.style.display='none'; document.getElementById('login-logo-fallback').style.display='block'" />
+        <div id="login-logo-fallback" class="login-logo-fallback" style="display:none">
+          <span class="logo-hand">🤝</span>
+        </div>
+        <h1>Tu Mano a Uno</h1>
+        <p>Conectá con tu comunidad.<br>Ofrecé o pedí ayuda cerca tuyo.</p>
+      </div>
+      <button id="btn-google-login" class="btn-google">
+        <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+        Continuar con Google
+      </button>
+      <p class="login-disclaimer">Al ingresar aceptás los <a href="#" id="link-terms">términos de uso</a>. Tus datos están protegidos y no se comparten con terceros.</p>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="app-screen" class="screen">
+
+    <!-- HEADER -->
+    <header class="app-header">
+      <div class="header-left">
+        <img src="icons/logo.png" alt="Tu Mano a Uno" class="header-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'" />
+        <span class="header-logo-fallback" style="display:none">🤝 Tu Mano a Uno</span>
+      </div>
+      <div class="header-right">
+        <button id="btn-donar" class="btn-donar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+          Donar
+        </button>
+        <div id="user-avatar-wrap" class="user-avatar-wrap">
+          <img id="user-avatar" src="" alt="Tu foto" class="user-avatar" />
+          <div id="user-menu" class="user-menu hidden">
+            <div id="user-menu-name" class="user-menu-name"></div>
+            <button id="btn-logout" class="user-menu-logout">Cerrar sesión</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- CITY BAR -->
+    <div class="city-bar">
+      <span id="city-label" class="city-label">Cargando tu ubicación…</span>
+      <div class="city-controls">
+        <select id="city-select" class="city-select" aria-label="Cambiar ciudad">
+          <option value="">Tu ciudad</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- MAP -->
+    <div id="map" class="map-container" aria-label="Mapa de pedidos y ofrecimientos cercanos"></div>
+
+    <!-- ZOOM CONTROLS (custom) -->
+    <div class="map-zoom-controls">
+      <button id="zoom-in" class="zoom-btn" aria-label="Acercar">+</button>
+      <button id="zoom-out" class="zoom-btn" aria-label="Alejar">−</button>
+    </div>
+
+    <!-- FAB -->
+    <button id="btn-fab" class="fab" aria-label="Ofrecé o solicitá ayuda">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <span>Ofrecé o solicitá aquí</span>
+    </button>
+
+  </div>
+
+  <!-- FORM MODAL -->
+  <div id="form-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="form-modal-title">
+    <div class="modal-container">
+      <button class="modal-close" id="modal-close-btn" aria-label="Cerrar">×</button>
+      <h2 id="form-modal-title">Nueva publicación</h2>
+
+      <div class="form-user-info">
+        <img id="form-user-photo" src="" alt="" class="form-user-photo" />
+        <span id="form-user-name" class="form-user-name"></span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">¿Qué querés hacer?</label>
+        <div class="toggle-switch" role="group" aria-label="Tipo de publicación">
+          <button class="toggle-option active" data-value="ofrezco" id="toggle-ofrezco">Ofrezco</button>
+          <button class="toggle-option" data-value="necesito" id="toggle-necesito">Necesito</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Tipo</label>
+        <div class="toggle-switch" role="group" aria-label="Tipo de ayuda">
+          <button class="toggle-option active" data-value="producto" id="toggle-producto">Producto</button>
+          <button class="toggle-option" data-value="servicio" id="toggle-servicio">Servicio</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="form-descripcion">Descripción <span id="char-count" class="char-count">0/300</span></label>
+        <textarea id="form-descripcion" class="form-textarea" placeholder="Describí brevemente lo que ofrecés o necesitás…" maxlength="300" rows="4"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="form-celular">Celular (WhatsApp)</label>
+        <div class="input-phone-wrap">
+          <span class="phone-prefix">+54</span>
+          <input type="tel" id="form-celular" class="form-input phone-input" placeholder="1137881082" maxlength="14" pattern="[0-9]+" inputmode="numeric" />
+        </div>
+        <p class="form-hint">Sin 0, sin 15. Ejemplo: 1137881082</p>
+      </div>
+
+      <div id="location-status" class="location-status">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="location-text">Obteniendo tu ubicación…</span>
+      </div>
+
+      <button id="btn-publicar" class="btn-publicar" disabled>
+        <span id="btn-publicar-text">Publicar</span>
+        <svg id="btn-publicar-spinner" class="spinner hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- CARD DETAIL MODAL -->
+  <div id="card-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="card-modal-title">
+    <div class="modal-container modal-card-detail">
+      <button class="modal-close" id="card-modal-close" aria-label="Cerrar">×</button>
+      <div id="card-modal-content"></div>
+    </div>
+  </div>
+
+  <!-- DONAR MODAL -->
+  <div id="donar-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="donar-modal-title">
+    <div class="modal-container modal-donar">
+      <button class="modal-close" id="donar-modal-close" aria-label="Cerrar">×</button>
+      <div class="donar-content">
+        <div class="donar-heart">💙</div>
+        <h2 id="donar-modal-title">¡Gracias por considerar donar!</h2>
+        <p>Tu ayuda nos permite mantener este proyecto vivo y gratuito para toda la comunidad.</p>
+        <div class="cvu-box">
+          <span class="cvu-label">CVU</span>
+          <span class="cvu-value" id="cvu-value">0000003100040849915686</span>
+          <button id="btn-copy-cvu" class="btn-copy-cvu" aria-label="Copiar CVU">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span id="cvu-copy-text">Copiar</span>
+          </button>
+        </div>
+        <p class="donar-alias">Alias: <strong>tumanoauno.donacion</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast hidden" role="alert" aria-live="polite"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</body>
+</html>
