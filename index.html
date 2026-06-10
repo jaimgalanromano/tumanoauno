@@ -16,7 +16,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
-    /* ─── TOKENS ─────────────────────────────────────────────── */
     :root {
       --blue:       #5BABCC;
       --blue-dark:  #2C7DA0;
@@ -45,835 +44,160 @@
       --transition: 200ms cubic-bezier(0.4,0,0.2,1);
       --header-h:   60px;
     }
-
     * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-
-    html, body {
-      font-family:'Nunito', sans-serif;
-      background:var(--gray-100);
-      height:100%;
-      overflow:hidden;
-      color:var(--gray-900);
-    }
-
-    /* ─── LAYOUT ─────────────────────────────────────────────── */
-    .app {
-      display:flex;
-      flex-direction:column;
-      height:100dvh;
-      position:relative;
-      overflow:hidden;
-    }
-
-    /* ─── HEADER ──────────────────────────────────────────────── */
-    .header {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      background:var(--white);
-      padding:10px 16px;
-      border-bottom:1px solid rgba(0,0,0,0.06);
-      box-shadow:var(--shadow-sm);
-      z-index:100;
-      flex-shrink:0;
-      height:var(--header-h);
-      position:relative;
-    }
-    .logo {
-      display:flex;
-      align-items:center;
-      gap:9px;
-    }
-    .logo-icon {
-      width:36px; height:36px;
-      background:linear-gradient(135deg, var(--blue), var(--blue-dark));
-      border-radius:12px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:18px;
-      box-shadow:0 2px 8px rgba(44,125,160,0.3);
-    }
-    .logo-name {
-      font-weight:900;
-      font-size:1.05rem;
-      color:var(--blue-dark);
-      letter-spacing:-0.3px;
-    }
+    html, body { font-family:'Nunito', sans-serif; background:var(--gray-100); height:100%; overflow:hidden; color:var(--gray-900); }
+    .app { display:flex; flex-direction:column; height:100dvh; position:relative; overflow:hidden; }
+    .header { display:flex; justify-content:space-between; align-items:center; background:var(--white); padding:10px 16px; border-bottom:1px solid rgba(0,0,0,0.06); box-shadow:var(--shadow-sm); z-index:100; flex-shrink:0; height:var(--header-h); position:relative; }
+    .logo { display:flex; align-items:center; gap:9px; }
+    .logo-icon { width:36px; height:36px; background:linear-gradient(135deg, var(--blue), var(--blue-dark)); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; box-shadow:0 2px 8px rgba(44,125,160,0.3); }
+    .logo-name { font-weight:900; font-size:1.05rem; color:var(--blue-dark); letter-spacing:-0.3px; }
     .logo-name span { color:var(--blue); }
-    .header-right {
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-    .btn-donate {
-      background:var(--orange-light);
-      border:none;
-      padding:7px 13px;
-      border-radius:var(--radius-xl);
-      font-weight:700;
-      font-size:0.78rem;
-      color:var(--orange);
-      display:flex;
-      align-items:center;
-      gap:5px;
-      cursor:pointer;
-      transition:background var(--transition), transform var(--transition);
-      font-family:inherit;
-    }
+    .header-right { display:flex; align-items:center; gap:10px; }
+    .btn-donate { background:var(--orange-light); border:none; padding:7px 13px; border-radius:var(--radius-xl); font-weight:700; font-size:0.78rem; color:var(--orange); display:flex; align-items:center; gap:5px; cursor:pointer; transition:background var(--transition), transform var(--transition); font-family:inherit; }
     .btn-donate:hover { background:#fde0c5; transform:scale(1.03); }
-    .avatar-wrap {
-      position:relative;
-      cursor:pointer;
-    }
-    .avatar {
-      width:38px; height:38px;
-      border-radius:50%;
-      object-fit:cover;
-      border:2.5px solid var(--blue);
-      display:block;
-      background:var(--gray-100);
-      transition:border-color var(--transition);
-    }
+    .avatar-wrap { position:relative; cursor:pointer; }
+    .avatar { width:38px; height:38px; border-radius:50%; object-fit:cover; border:2.5px solid var(--blue); display:block; background:var(--gray-100); transition:border-color var(--transition); }
     .avatar-wrap:hover .avatar { border-color:var(--blue-dark); }
-    .user-dot {
-      position:absolute;
-      bottom:1px; right:1px;
-      width:9px; height:9px;
-      background:var(--green);
-      border-radius:50%;
-      border:2px solid white;
-      display:none;
-    }
+    .user-dot { position:absolute; bottom:1px; right:1px; width:9px; height:9px; background:var(--green); border-radius:50%; border:2px solid white; display:none; }
     .user-dot.visible { display:block; }
-    .dropdown {
-      position:absolute;
-      right:0; top:48px;
-      background:var(--white);
-      border-radius:var(--radius-md);
-      box-shadow:var(--shadow-lg);
-      width:210px;
-      padding:10px;
-      z-index:400;
-      border:1px solid var(--gray-100);
-      animation:fadeDown 0.15s ease;
-    }
+    .dropdown { position:absolute; right:0; top:48px; background:var(--white); border-radius:var(--radius-md); box-shadow:var(--shadow-lg); width:210px; padding:10px; z-index:400; border:1px solid var(--gray-100); animation:fadeDown 0.15s ease; }
     .dropdown.hidden { display:none; }
-    @keyframes fadeDown {
-      from { opacity:0; transform:translateY(-6px); }
-      to   { opacity:1; transform:translateY(0); }
-    }
-    .dropdown-name {
-      font-weight:700;
-      font-size:0.85rem;
-      padding:6px 8px 10px;
-      border-bottom:1px solid var(--gray-100);
-      margin-bottom:6px;
-      color:var(--gray-700);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .dropdown-btn {
-      background:none; border:none;
-      color:var(--red); font-weight:600;
-      font-size:0.82rem;
-      font-family:inherit;
-      width:100%; text-align:left;
-      padding:8px 8px;
-      border-radius:var(--radius-sm);
-      cursor:pointer;
-      transition:background var(--transition);
-    }
+    @keyframes fadeDown { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+    .dropdown-name { font-weight:700; font-size:0.85rem; padding:6px 8px 10px; border-bottom:1px solid var(--gray-100); margin-bottom:6px; color:var(--gray-700); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .dropdown-btn { background:none; border:none; color:var(--red); font-weight:600; font-size:0.82rem; font-family:inherit; width:100%; text-align:left; padding:8px 8px; border-radius:var(--radius-sm); cursor:pointer; transition:background var(--transition); }
     .dropdown-btn:hover { background:var(--red-light); }
-    .login-btn {
-      background:var(--blue-dark);
-      color:white; font-weight:700;
-      font-size:0.82rem;
-      font-family:inherit;
-      width:100%; text-align:center;
-      padding:9px 8px;
-      border:none;
-      border-radius:var(--radius-sm);
-      cursor:pointer;
-      transition:background var(--transition);
-    }
+    .login-btn { background:var(--blue-dark); color:white; font-weight:700; font-size:0.82rem; font-family:inherit; width:100%; text-align:center; padding:9px 8px; border:none; border-radius:var(--radius-sm); cursor:pointer; transition:background var(--transition); }
     .login-btn:hover { background:var(--blue); }
-
-    /* ─── MAP AREA ────────────────────────────────────────────── */
-    .map-wrap {
-      flex:1;
-      position:relative;
-      overflow:hidden;
-      min-height:0;
-    }
-    #map {
-      position:absolute;
-      inset:0;
-      z-index:1;
-    }
-
-    /* ─── CITY BAR (over map) ─────────────────────────────────── */
-    .city-bar {
-      position:absolute;
-      top:12px; left:12px; right:12px;
-      z-index:10;
-      display:flex;
-      align-items:center;
-      gap:8px;
-      background:rgba(255,255,255,0.92);
-      backdrop-filter:blur(12px);
-      -webkit-backdrop-filter:blur(12px);
-      padding:8px 12px;
-      border-radius:var(--radius-xl);
-      box-shadow:var(--shadow-md);
-      border:1px solid rgba(255,255,255,0.8);
-    }
+    .map-wrap { flex:1; position:relative; overflow:hidden; min-height:0; }
+    #map { position:absolute; inset:0; z-index:1; }
+    .city-bar { position:absolute; top:12px; left:12px; right:12px; z-index:10; display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.92); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); padding:8px 12px; border-radius:var(--radius-xl); box-shadow:var(--shadow-md); border:1px solid rgba(255,255,255,0.8); }
     .city-icon { font-size:1rem; flex-shrink:0; }
-    .city-label {
-      font-weight:700;
-      font-size:0.82rem;
-      color:var(--gray-700);
-      flex:1;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .city-divider {
-      width:1px; height:16px;
-      background:var(--gray-300);
-      flex-shrink:0;
-    }
-    .city-select-btn {
-      background:none;
-      border:none;
-      font-family:inherit;
-      font-size:0.78rem;
-      font-weight:700;
-      color:var(--blue-dark);
-      cursor:pointer;
-      padding:2px 4px;
-      border-radius:8px;
-      white-space:nowrap;
-      flex-shrink:0;
-      transition:color var(--transition);
-    }
+    .city-label { font-weight:700; font-size:0.82rem; color:var(--gray-700); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .city-divider { width:1px; height:16px; background:var(--gray-300); flex-shrink:0; }
+    .city-select-btn { background:none; border:none; font-family:inherit; font-size:0.78rem; font-weight:700; color:var(--blue-dark); cursor:pointer; padding:2px 4px; border-radius:8px; white-space:nowrap; flex-shrink:0; transition:color var(--transition); }
     .city-select-btn:hover { color:var(--blue); }
-
-    /* City picker panel */
-    .city-picker {
-      position:absolute;
-      top:60px; left:12px; right:12px;
-      z-index:20;
-      background:white;
-      border-radius:var(--radius-lg);
-      box-shadow:var(--shadow-lg);
-      padding:16px;
-      animation:fadeDown 0.15s ease;
-    }
+    .city-picker { position:absolute; top:60px; left:12px; right:12px; z-index:20; background:white; border-radius:var(--radius-lg); box-shadow:var(--shadow-lg); padding:16px; animation:fadeDown 0.15s ease; }
     .city-picker.hidden { display:none; }
-    .city-picker-title {
-      font-weight:800;
-      font-size:0.88rem;
-      color:var(--gray-700);
-      margin-bottom:12px;
-    }
-    .city-grid {
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:8px;
-    }
-    .city-option {
-      background:var(--gray-50);
-      border:2px solid transparent;
-      border-radius:var(--radius-md);
-      padding:10px 12px;
-      cursor:pointer;
-      font-family:inherit;
-      font-size:0.82rem;
-      font-weight:700;
-      color:var(--gray-700);
-      text-align:left;
-      transition:all var(--transition);
-    }
-    .city-option:hover, .city-option.active {
-      background:var(--blue-xlight);
-      border-color:var(--blue);
-      color:var(--blue-dark);
-    }
+    .city-picker-title { font-weight:800; font-size:0.88rem; color:var(--gray-700); margin-bottom:12px; }
+    .city-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .city-option { background:var(--gray-50); border:2px solid transparent; border-radius:var(--radius-md); padding:10px 12px; cursor:pointer; font-family:inherit; font-size:0.82rem; font-weight:700; color:var(--gray-700); text-align:left; transition:all var(--transition); }
+    .city-option:hover, .city-option.active { background:var(--blue-xlight); border-color:var(--blue); color:var(--blue-dark); }
     .city-option .city-opt-name { display:block; }
-    .city-option .city-opt-sub {
-      display:block;
-      font-weight:500;
-      font-size:0.72rem;
-      color:var(--gray-500);
-      margin-top:1px;
-    }
-
-    /* ─── FAB ─────────────────────────────────────────────────── */
-    .fab {
-      position:absolute;
-      bottom:16px; left:16px; right:16px;
-      z-index:10;
-      background:linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 100%);
-      border:none;
-      border-radius:var(--radius-xl);
-      padding:15px 20px;
-      color:white;
-      font-family:inherit;
-      font-weight:800;
-      font-size:0.95rem;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      box-shadow:0 4px 18px rgba(44,125,160,0.45);
-      cursor:pointer;
-      transition:transform var(--transition), box-shadow var(--transition);
-      letter-spacing:0.1px;
-    }
+    .city-option .city-opt-sub { display:block; font-weight:500; font-size:0.72rem; color:var(--gray-500); margin-top:1px; }
+    .fab { position:absolute; bottom:16px; left:16px; right:16px; z-index:10; background:linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 100%); border:none; border-radius:var(--radius-xl); padding:15px 20px; color:white; font-family:inherit; font-weight:800; font-size:0.95rem; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 18px rgba(44,125,160,0.45); cursor:pointer; transition:transform var(--transition), box-shadow var(--transition); letter-spacing:0.1px; }
     .fab:hover { transform:translateY(-1px); box-shadow:0 6px 24px rgba(44,125,160,0.5); }
     .fab:active { transform:translateY(0); }
-
-    /* ─── MAP MARKERS ─────────────────────────────────────────── */
     .custom-div-icon { background:transparent; border:none; }
-    .cm {
-      width:38px; height:38px;
-      border-radius:50%;
-      display:flex; align-items:center; justify-content:center;
-      font-size:18px;
-      border:2.5px solid white;
-      box-shadow:0 2px 8px rgba(0,0,0,0.2);
-    }
+    .cm { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; border:2.5px solid white; box-shadow:0 2px 8px rgba(0,0,0,0.2); }
     .cm-ofrezco { background:var(--blue); }
     .cm-necesito { background:var(--orange); }
-    .cm-resolved { background:var(--gray-400,#a0aab4); opacity:0.75; }
-
-    /* Popup minicard */
-    .leaflet-popup-content-wrapper {
-      border-radius:18px !important;
-      box-shadow:0 8px 32px rgba(0,0,0,0.14) !important;
-      border:none !important;
-      padding:0 !important;
-      overflow:hidden;
-    }
-    .leaflet-popup-content {
-      margin:0 !important;
-      width:auto !important;
-    }
+    .cm-resolved { background:#a0aab4; opacity:0.75; }
+    .leaflet-popup-content-wrapper { border-radius:18px !important; box-shadow:0 8px 32px rgba(0,0,0,0.14) !important; border:none !important; padding:0 !important; overflow:hidden; }
+    .leaflet-popup-content { margin:0 !important; width:auto !important; }
     .leaflet-popup-tip-container { display:none; }
-    .minicard {
-      width:240px;
-      font-family:'Nunito', sans-serif;
-      padding:14px;
-    }
-    .minicard-top {
-      display:flex;
-      align-items:center;
-      gap:8px;
-      margin-bottom:8px;
-    }
-    .minicard-photo {
-      width:34px; height:34px;
-      border-radius:50%;
-      object-fit:cover;
-      border:2px solid var(--gray-100);
-    }
-    .minicard-name {
-      font-weight:700;
-      font-size:0.82rem;
-      color:var(--gray-900);
-    }
-    .minicard-badges {
-      display:flex;
-      gap:5px;
-      margin-bottom:8px;
-      flex-wrap:wrap;
-    }
-    .badge {
-      padding:3px 9px;
-      border-radius:var(--radius-xl);
-      font-size:0.72rem;
-      font-weight:700;
-    }
+    .minicard { width:240px; font-family:'Nunito', sans-serif; padding:14px; }
+    .minicard-top { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+    .minicard-photo { width:34px; height:34px; border-radius:50%; object-fit:cover; border:2px solid var(--gray-100); }
+    .minicard-name { font-weight:700; font-size:0.82rem; color:var(--gray-900); }
+    .minicard-badges { display:flex; gap:5px; margin-bottom:8px; flex-wrap:wrap; }
+    .badge { padding:3px 9px; border-radius:var(--radius-xl); font-size:0.72rem; font-weight:700; }
     .badge-ofrezco { background:var(--blue-light); color:var(--blue-dark); }
     .badge-necesito { background:var(--orange-light); color:var(--orange); }
     .badge-resolved { background:var(--gray-100); color:var(--gray-500); }
     .badge-cat { background:var(--gray-100); color:var(--gray-700); }
-    .minicard-desc {
-      font-size:0.8rem;
-      color:var(--gray-700);
-      line-height:1.45;
-      margin-bottom:10px;
-    }
+    .minicard-desc { font-size:0.8rem; color:var(--gray-700); line-height:1.45; margin-bottom:10px; }
     .mc-countdown { margin-bottom:8px; }
-    .cbar {
-      height:5px;
-      background:var(--gray-100);
-      border-radius:4px;
-      overflow:hidden;
-      margin-bottom:3px;
-    }
-    .cbar-fill {
-      height:100%;
-      border-radius:4px;
-      background:var(--green);
-      transition:width 0.3s ease;
-    }
+    .cbar { height:5px; background:var(--gray-100); border-radius:4px; overflow:hidden; margin-bottom:3px; }
+    .cbar-fill { height:100%; border-radius:4px; background:var(--green); transition:width 0.3s ease; }
     .cbar-fill.urgent { background:var(--orange); }
     .cbar-fill.critical { background:var(--red); }
-    .cbar-text {
-      font-size:0.7rem;
-      color:var(--gray-500);
-      font-weight:600;
-    }
-    .mc-btn {
-      width:100%;
-      background:var(--blue-xlight);
-      border:none;
-      border-radius:var(--radius-xl);
-      padding:7px;
-      font-family:inherit;
-      font-size:0.78rem;
-      font-weight:700;
-      color:var(--blue-dark);
-      cursor:pointer;
-      transition:background var(--transition);
-    }
+    .cbar-text { font-size:0.7rem; color:var(--gray-500); font-weight:600; }
+    .mc-btn { width:100%; background:var(--blue-xlight); border:none; border-radius:var(--radius-xl); padding:7px; font-family:inherit; font-size:0.78rem; font-weight:700; color:var(--blue-dark); cursor:pointer; transition:background var(--transition); }
     .mc-btn:hover { background:var(--blue-light); }
-
-    /* ─── MODALS ──────────────────────────────────────────────── */
-    .overlay {
-      position:fixed;
-      inset:0;
-      background:rgba(10,25,45,0.5);
-      backdrop-filter:blur(4px);
-      -webkit-backdrop-filter:blur(4px);
-      z-index:500;
-      display:flex;
-      align-items:flex-end;
-      justify-content:center;
-      animation:fadeOverlay 0.2s ease;
-    }
+    .overlay { position:fixed; inset:0; background:rgba(10,25,45,0.5); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); z-index:500; display:flex; align-items:flex-end; justify-content:center; animation:fadeOverlay 0.2s ease; }
     .overlay.hidden { display:none; }
-    @keyframes fadeOverlay {
-      from { opacity:0; }
-      to   { opacity:1; }
-    }
-    .sheet {
-      background:var(--white);
-      width:100%;
-      max-width:520px;
-      border-radius:var(--radius-lg) var(--radius-lg) 0 0;
-      padding:0 0 env(safe-area-inset-bottom);
-      max-height:92dvh;
-      overflow-y:auto;
-      animation:slideUp 0.28s cubic-bezier(0.32,0.72,0,1);
-      position:relative;
-    }
-    @keyframes slideUp {
-      from { transform:translateY(40px); opacity:0; }
-      to   { transform:translateY(0);    opacity:1; }
-    }
-    .sheet-handle {
-      width:40px; height:4px;
-      background:var(--gray-300);
-      border-radius:4px;
-      margin:10px auto 0;
-    }
-    .sheet-header {
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:14px 20px 12px;
-      border-bottom:1px solid var(--gray-100);
-    }
-    .sheet-title {
-      font-weight:800;
-      font-size:1rem;
-      color:var(--gray-900);
-    }
-    .sheet-close {
-      width:30px; height:30px;
-      background:var(--gray-100);
-      border:none;
-      border-radius:50%;
-      cursor:pointer;
-      font-size:16px;
-      display:flex; align-items:center; justify-content:center;
-      color:var(--gray-700);
-      transition:background var(--transition);
-    }
+    @keyframes fadeOverlay { from { opacity:0; } to { opacity:1; } }
+    .sheet { background:var(--white); width:100%; max-width:520px; border-radius:var(--radius-lg) var(--radius-lg) 0 0; padding:0 0 env(safe-area-inset-bottom); max-height:92dvh; overflow-y:auto; animation:slideUp 0.28s cubic-bezier(0.32,0.72,0,1); position:relative; }
+    @keyframes slideUp { from { transform:translateY(40px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+    .sheet-handle { width:40px; height:4px; background:var(--gray-300); border-radius:4px; margin:10px auto 0; }
+    .sheet-header { display:flex; align-items:center; justify-content:space-between; padding:14px 20px 12px; border-bottom:1px solid var(--gray-100); }
+    .sheet-title { font-weight:800; font-size:1rem; color:var(--gray-900); }
+    .sheet-close { width:30px; height:30px; background:var(--gray-100); border:none; border-radius:50%; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; color:var(--gray-700); transition:background var(--transition); }
     .sheet-close:hover { background:var(--gray-300); }
     .sheet-body { padding:18px 20px 24px; }
-
-    /* ─── FORM COMPONENTS ─────────────────────────────────────── */
-    .segment-group {
-      display:flex;
-      gap:0;
-      background:var(--gray-100);
-      border-radius:var(--radius-xl);
-      padding:4px;
-      margin-bottom:14px;
-    }
-    .seg-btn {
-      flex:1;
-      border:none;
-      border-radius:var(--radius-xl);
-      padding:9px 10px;
-      font-family:inherit;
-      font-size:0.82rem;
-      font-weight:700;
-      color:var(--gray-500);
-      background:transparent;
-      cursor:pointer;
-      transition:all var(--transition);
-      display:flex; align-items:center; justify-content:center; gap:5px;
-    }
-    .seg-btn.active {
-      background:var(--white);
-      color:var(--gray-900);
-      box-shadow:var(--shadow-sm);
-    }
+    .segment-group { display:flex; gap:0; background:var(--gray-100); border-radius:var(--radius-xl); padding:4px; margin-bottom:14px; }
+    .seg-btn { flex:1; border:none; border-radius:var(--radius-xl); padding:9px 10px; font-family:inherit; font-size:0.82rem; font-weight:700; color:var(--gray-500); background:transparent; cursor:pointer; transition:all var(--transition); display:flex; align-items:center; justify-content:center; gap:5px; }
+    .seg-btn.active { background:var(--white); color:var(--gray-900); box-shadow:var(--shadow-sm); }
     .seg-btn.active.ofrezco { color:var(--blue-dark); }
     .seg-btn.active.necesito { color:var(--orange); }
-    .form-label {
-      display:block;
-      font-size:0.78rem;
-      font-weight:700;
-      color:var(--gray-700);
-      margin-bottom:5px;
-      letter-spacing:0.2px;
-    }
-    .form-field {
-      width:100%;
-      padding:11px 14px;
-      border-radius:var(--radius-md);
-      border:1.5px solid var(--gray-300);
-      font-family:inherit;
-      font-size:0.9rem;
-      color:var(--gray-900);
-      background:var(--gray-50);
-      transition:border-color var(--transition), background var(--transition);
-      outline:none;
-      resize:none;
-    }
-    .form-field:focus {
-      border-color:var(--blue);
-      background:var(--white);
-    }
+    .form-label { display:block; font-size:0.78rem; font-weight:700; color:var(--gray-700); margin-bottom:5px; letter-spacing:0.2px; }
+    .form-field { width:100%; padding:11px 14px; border-radius:var(--radius-md); border:1.5px solid var(--gray-300); font-family:inherit; font-size:0.9rem; color:var(--gray-900); background:var(--gray-50); transition:border-color var(--transition), background var(--transition); outline:none; resize:none; }
+    .form-field:focus { border-color:var(--blue); background:var(--white); }
     .form-field::placeholder { color:var(--gray-300); }
     .form-row { margin-bottom:14px; }
-    .phone-wrap {
-      display:flex;
-      align-items:center;
-      gap:0;
-    }
-    .phone-prefix {
-      background:var(--gray-100);
-      border:1.5px solid var(--gray-300);
-      border-right:none;
-      border-radius:var(--radius-md) 0 0 var(--radius-md);
-      padding:11px 12px;
-      font-weight:700;
-      font-size:0.85rem;
-      color:var(--gray-700);
-      white-space:nowrap;
-    }
-    .phone-wrap .form-field {
-      border-radius:0 var(--radius-md) var(--radius-md) 0;
-    }
-    .loc-status {
-      display:flex; align-items:center; gap:7px;
-      background:var(--gray-50);
-      border-radius:var(--radius-md);
-      padding:10px 14px;
-      font-size:0.8rem;
-      font-weight:600;
-      color:var(--gray-700);
-      margin-bottom:14px;
-      border:1.5px solid var(--gray-100);
-    }
-    .loc-dot {
-      width:8px; height:8px;
-      border-radius:50%;
-      background:var(--gray-300);
-      flex-shrink:0;
-    }
+    .phone-wrap { display:flex; align-items:center; gap:0; }
+    .phone-prefix { background:var(--gray-100); border:1.5px solid var(--gray-300); border-right:none; border-radius:var(--radius-md) 0 0 var(--radius-md); padding:11px 12px; font-weight:700; font-size:0.85rem; color:var(--gray-700); white-space:nowrap; }
+    .phone-wrap .form-field { border-radius:0 var(--radius-md) var(--radius-md) 0; }
+    .loc-status { display:flex; align-items:center; gap:7px; background:var(--gray-50); border-radius:var(--radius-md); padding:10px 14px; font-size:0.8rem; font-weight:600; color:var(--gray-700); margin-bottom:14px; border:1.5px solid var(--gray-100); }
+    .loc-dot { width:8px; height:8px; border-radius:50%; background:var(--gray-300); flex-shrink:0; }
     .loc-dot.ok { background:var(--green); animation:pulse 2s infinite; }
     .loc-dot.err { background:var(--red); }
-    @keyframes pulse {
-      0%,100% { opacity:1; }
-      50% { opacity:0.4; }
-    }
-    .btn-primary {
-      width:100%;
-      background:linear-gradient(135deg, var(--blue-dark), var(--blue));
-      border:none;
-      border-radius:var(--radius-xl);
-      padding:14px;
-      color:white;
-      font-family:inherit;
-      font-weight:800;
-      font-size:0.95rem;
-      cursor:pointer;
-      transition:opacity var(--transition), transform var(--transition);
-      box-shadow:0 3px 12px rgba(44,125,160,0.35);
-    }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+    .btn-primary { width:100%; background:linear-gradient(135deg, var(--blue-dark), var(--blue)); border:none; border-radius:var(--radius-xl); padding:14px; color:white; font-family:inherit; font-weight:800; font-size:0.95rem; cursor:pointer; transition:opacity var(--transition), transform var(--transition); box-shadow:0 3px 12px rgba(44,125,160,0.35); }
     .btn-primary:hover:not(:disabled) { opacity:0.92; transform:translateY(-1px); }
     .btn-primary:disabled { opacity:0.45; cursor:not-allowed; transform:none; }
-
-    /* ─── DETAIL MODAL ───────────────────────────────────────── */
-    .detail-hero {
-      display:flex; align-items:center; gap:12px;
-      margin-bottom:14px;
-    }
-    .detail-photo {
-      width:52px; height:52px;
-      border-radius:50%;
-      object-fit:cover;
-      border:3px solid var(--gray-100);
-    }
+    .detail-hero { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+    .detail-photo { width:52px; height:52px; border-radius:50%; object-fit:cover; border:3px solid var(--gray-100); }
     .detail-info { flex:1; }
-    .detail-name {
-      font-weight:800; font-size:0.95rem;
-      color:var(--gray-900);
-    }
-    .detail-date {
-      font-size:0.75rem;
-      color:var(--gray-500);
-      font-weight:600;
-    }
-    .detail-badges {
-      display:flex; gap:6px; flex-wrap:wrap;
-      margin-bottom:14px;
-    }
-    .detail-desc {
-      font-size:0.9rem;
-      line-height:1.55;
-      color:var(--gray-700);
-      margin-bottom:16px;
-      background:var(--gray-50);
-      border-radius:var(--radius-md);
-      padding:12px 14px;
-    }
+    .detail-name { font-weight:800; font-size:0.95rem; color:var(--gray-900); }
+    .detail-date { font-size:0.75rem; color:var(--gray-500); font-weight:600; }
+    .detail-badges { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+    .detail-desc { font-size:0.9rem; line-height:1.55; color:var(--gray-700); margin-bottom:16px; background:var(--gray-50); border-radius:var(--radius-md); padding:12px 14px; }
     .detail-countdown { margin-bottom:16px; }
-    .detail-cbar {
-      height:7px;
-      background:var(--gray-100);
-      border-radius:6px;
-      overflow:hidden;
-      margin-bottom:5px;
-    }
-    .detail-cbar-fill {
-      height:100%; border-radius:6px;
-      background:var(--green);
-    }
+    .detail-cbar { height:7px; background:var(--gray-100); border-radius:6px; overflow:hidden; margin-bottom:5px; }
+    .detail-cbar-fill { height:100%; border-radius:6px; background:var(--green); }
     .detail-cbar-fill.urgent { background:var(--orange); }
     .detail-cbar-fill.critical { background:var(--red); }
-    .detail-cbar-label {
-      font-size:0.78rem;
-      font-weight:700;
-      color:var(--gray-500);
-    }
-    .btn-whatsapp {
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      background:#25D366;
-      color:white;
-      border:none;
-      border-radius:var(--radius-xl);
-      padding:14px;
-      font-family:inherit;
-      font-weight:800;
-      font-size:0.95rem;
-      text-decoration:none;
-      cursor:pointer;
-      transition:background var(--transition);
-      box-shadow:0 3px 12px rgba(37,211,102,0.35);
-    }
+    .detail-cbar-label { font-size:0.78rem; font-weight:700; color:var(--gray-500); }
+    .btn-whatsapp { display:flex; align-items:center; justify-content:center; gap:8px; background:#25D366; color:white; border:none; border-radius:var(--radius-xl); padding:14px; font-family:inherit; font-weight:800; font-size:0.95rem; text-decoration:none; cursor:pointer; transition:background var(--transition); box-shadow:0 3px 12px rgba(37,211,102,0.35); }
     .btn-whatsapp:hover { background:#1fbc59; }
-    .resolved-notice {
-      background:var(--gray-100);
-      border-radius:var(--radius-md);
-      padding:12px 14px;
-      font-size:0.82rem;
-      font-weight:700;
-      color:var(--gray-500);
-      text-align:center;
-    }
-    .own-phone-notice {
-      background:var(--blue-xlight);
-      border-radius:var(--radius-md);
-      padding:12px 14px;
-      font-size:0.82rem;
-      font-weight:600;
-      color:var(--blue-dark);
-    }
-
-    /* ─── DONATION MODAL ──────────────────────────────────────── */
+    .resolved-notice { background:var(--gray-100); border-radius:var(--radius-md); padding:12px 14px; font-size:0.82rem; font-weight:700; color:var(--gray-500); text-align:center; }
+    .own-phone-notice { background:var(--blue-xlight); border-radius:var(--radius-md); padding:12px 14px; font-size:0.82rem; font-weight:600; color:var(--blue-dark); }
     .donation-body { text-align:center; padding-bottom:24px; }
     .donation-emoji { font-size:3rem; margin-bottom:8px; }
-    .donation-title {
-      font-weight:900; font-size:1.2rem;
-      color:var(--gray-900); margin-bottom:6px;
-    }
-    .donation-sub {
-      font-size:0.85rem;
-      color:var(--gray-500);
-      line-height:1.5;
-      margin-bottom:18px;
-    }
-    .cvu-box {
-      background:var(--gray-50);
-      border:1.5px solid var(--gray-100);
-      border-radius:var(--radius-md);
-      padding:14px;
-      margin-bottom:16px;
-    }
-    .cvu-label {
-      font-size:0.7rem;
-      font-weight:700;
-      color:var(--gray-500);
-      letter-spacing:0.5px;
-      text-transform:uppercase;
-      margin-bottom:4px;
-    }
-    .cvu-number {
-      font-size:0.88rem;
-      font-weight:700;
-      color:var(--gray-900);
-      letter-spacing:0.5px;
-      word-break:break-all;
-    }
-    .btn-copy {
-      margin-top:10px;
-      width:100%;
-      background:var(--blue-xlight);
-      border:none;
-      border-radius:var(--radius-xl);
-      padding:10px;
-      font-family:inherit;
-      font-size:0.82rem;
-      font-weight:700;
-      color:var(--blue-dark);
-      cursor:pointer;
-      transition:background var(--transition);
-    }
+    .donation-title { font-weight:900; font-size:1.2rem; color:var(--gray-900); margin-bottom:6px; }
+    .donation-sub { font-size:0.85rem; color:var(--gray-500); line-height:1.5; margin-bottom:18px; }
+    .cvu-box { background:var(--gray-50); border:1.5px solid var(--gray-100); border-radius:var(--radius-md); padding:14px; margin-bottom:16px; }
+    .cvu-label { font-size:0.7rem; font-weight:700; color:var(--gray-500); letter-spacing:0.5px; text-transform:uppercase; margin-bottom:4px; }
+    .cvu-number { font-size:0.88rem; font-weight:700; color:var(--gray-900); letter-spacing:0.5px; word-break:break-all; }
+    .btn-copy { margin-top:10px; width:100%; background:var(--blue-xlight); border:none; border-radius:var(--radius-xl); padding:10px; font-family:inherit; font-size:0.82rem; font-weight:700; color:var(--blue-dark); cursor:pointer; transition:background var(--transition); }
     .btn-copy:hover { background:var(--blue-light); }
-
-    /* ─── PWA INSTALL BANNER ──────────────────────────────────── */
-    .pwa-banner {
-      position:fixed;
-      bottom:0; left:0; right:0;
-      z-index:600;
-      background:var(--white);
-      border-top:1px solid var(--gray-100);
-      padding:14px 18px calc(14px + env(safe-area-inset-bottom));
-      box-shadow:0 -4px 20px rgba(0,0,0,0.10);
-      display:flex;
-      align-items:center;
-      gap:12px;
-      animation:slideUp 0.3s ease;
-    }
+    .pwa-banner { position:fixed; bottom:0; left:0; right:0; z-index:600; background:var(--white); border-top:1px solid var(--gray-100); padding:14px 18px calc(14px + env(safe-area-inset-bottom)); box-shadow:0 -4px 20px rgba(0,0,0,0.10); display:flex; align-items:center; gap:12px; animation:slideUp 0.3s ease; }
     .pwa-banner.hidden { display:none; }
-    .pwa-banner-icon {
-      width:44px; height:44px;
-      background:linear-gradient(135deg, var(--blue), var(--blue-dark));
-      border-radius:12px;
-      display:flex; align-items:center; justify-content:center;
-      font-size:22px;
-      flex-shrink:0;
-    }
+    .pwa-banner-icon { width:44px; height:44px; background:linear-gradient(135deg, var(--blue), var(--blue-dark)); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
     .pwa-banner-text { flex:1; }
-    .pwa-banner-title {
-      font-weight:800; font-size:0.88rem;
-      color:var(--gray-900);
-    }
-    .pwa-banner-sub {
-      font-size:0.75rem;
-      color:var(--gray-500);
-      font-weight:600;
-    }
-    .pwa-install-btn {
-      background:var(--blue-dark);
-      color:white;
-      border:none;
-      border-radius:var(--radius-xl);
-      padding:9px 15px;
-      font-family:inherit;
-      font-size:0.8rem;
-      font-weight:700;
-      cursor:pointer;
-      white-space:nowrap;
-      flex-shrink:0;
-    }
-    .pwa-dismiss-btn {
-      background:none;
-      border:none;
-      color:var(--gray-500);
-      font-size:1.1rem;
-      cursor:pointer;
-      padding:4px;
-      flex-shrink:0;
-    }
-
-    /* ─── TOAST ───────────────────────────────────────────────── */
-    .toast {
-      position:fixed;
-      bottom:82px; left:16px; right:16px;
-      z-index:900;
-      background:var(--gray-900);
-      color:white;
-      padding:12px 18px;
-      border-radius:var(--radius-xl);
-      font-size:0.85rem;
-      font-weight:600;
-      text-align:center;
-      box-shadow:var(--shadow-lg);
-      animation:toastIn 0.2s ease;
-      pointer-events:none;
-    }
+    .pwa-banner-title { font-weight:800; font-size:0.88rem; color:var(--gray-900); }
+    .pwa-banner-sub { font-size:0.75rem; color:var(--gray-500); font-weight:600; }
+    .pwa-install-btn { background:var(--blue-dark); color:white; border:none; border-radius:var(--radius-xl); padding:9px 15px; font-family:inherit; font-size:0.8rem; font-weight:700; cursor:pointer; white-space:nowrap; flex-shrink:0; }
+    .pwa-dismiss-btn { background:none; border:none; color:var(--gray-500); font-size:1.1rem; cursor:pointer; padding:4px; flex-shrink:0; }
+    .toast { position:fixed; bottom:82px; left:16px; right:16px; z-index:900; background:var(--gray-900); color:white; padding:12px 18px; border-radius:var(--radius-xl); font-size:0.85rem; font-weight:600; text-align:center; box-shadow:var(--shadow-lg); animation:toastIn 0.2s ease; pointer-events:none; }
     .toast.hidden { display:none; }
     .toast.success { background:var(--green); }
-    .toast.error   { background:var(--red); }
-    @keyframes toastIn {
-      from { opacity:0; transform:translateY(10px); }
-      to   { opacity:1; transform:translateY(0); }
-    }
-
-    /* ─── LOADING SPINNER ─────────────────────────────────────── */
-    .spinner {
-      width:18px; height:18px;
-      border:2.5px solid rgba(255,255,255,0.3);
-      border-top-color:white;
-      border-radius:50%;
-      animation:spin 0.7s linear infinite;
-      display:inline-block;
-      vertical-align:middle;
-    }
+    .toast.error { background:var(--red); }
+    @keyframes toastIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+    .spinner { width:18px; height:18px; border:2.5px solid rgba(255,255,255,0.3); border-top-color:white; border-radius:50%; animation:spin 0.7s linear infinite; display:inline-block; vertical-align:middle; }
     @keyframes spin { to { transform:rotate(360deg); } }
-
-    /* ─── LEAFLET OVERRIDES ───────────────────────────────────── */
     .leaflet-control-attribution { display:none !important; }
     .leaflet-control-zoom { display:none !important; }
     .leaflet-container { cursor:default !important; }
-
-    /* ─── REDUCED MOTION ──────────────────────────────────────── */
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration:0.01ms !important;
-        transition-duration:0.01ms !important;
-      }
-    }
+    /* Map loading indicator */
+    .map-loading { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:5; background:white; border-radius:var(--radius-lg); padding:16px 24px; box-shadow:var(--shadow-lg); display:flex; align-items:center; gap:10px; font-weight:700; font-size:0.88rem; color:var(--gray-700); }
+    .map-loading.hidden { display:none; }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
   </style>
 </head>
 <body>
-
 <div class="app">
-  <!-- HEADER -->
   <header class="header">
     <div class="logo">
       <div class="logo-icon">🤝</div>
@@ -893,11 +217,15 @@
     </div>
   </header>
 
-  <!-- MAP AREA -->
   <div class="map-wrap">
     <div id="map"></div>
 
-    <!-- CITY BAR -->
+    <!-- Map loading -->
+    <div class="map-loading" id="mapLoading">
+      <div class="spinner" style="border-top-color:var(--blue-dark);border-color:var(--gray-300);"></div>
+      Cargando publicaciones…
+    </div>
+
     <div class="city-bar">
       <span class="city-icon">📍</span>
       <span class="city-label" id="cityLabel">Cargando…</span>
@@ -905,38 +233,30 @@
       <button class="city-select-btn" id="citySelectBtn">Cambiar ciudad ›</button>
     </div>
 
-    <!-- CITY PICKER -->
     <div class="city-picker hidden" id="cityPicker">
       <div class="city-picker-title">¿Dónde querés ver ayudas?</div>
       <div class="city-grid">
         <button class="city-option" data-lat="-34.6118" data-lng="-58.3960" data-name="Buenos Aires">
-          <span class="city-opt-name">🏙 Buenos Aires</span>
-          <span class="city-opt-sub">CABA</span>
+          <span class="city-opt-name">🏙 Buenos Aires</span><span class="city-opt-sub">CABA</span>
         </button>
         <button class="city-option" data-lat="-31.4201" data-lng="-64.1888" data-name="Córdoba">
-          <span class="city-opt-name">🌳 Córdoba</span>
-          <span class="city-opt-sub">Capital</span>
+          <span class="city-opt-name">🌳 Córdoba</span><span class="city-opt-sub">Capital</span>
         </button>
         <button class="city-option" data-lat="-32.9468" data-lng="-60.6393" data-name="Rosario">
-          <span class="city-opt-name">🌊 Rosario</span>
-          <span class="city-opt-sub">Santa Fe</span>
+          <span class="city-opt-name">🌊 Rosario</span><span class="city-opt-sub">Santa Fe</span>
         </button>
         <button class="city-option" data-lat="-26.8241" data-lng="-65.2226" data-name="Tucumán">
-          <span class="city-opt-name">🏔 Tucumán</span>
-          <span class="city-opt-sub">Capital</span>
+          <span class="city-opt-name">🏔 Tucumán</span><span class="city-opt-sub">Capital</span>
         </button>
         <button class="city-option" data-lat="-38.7196" data-lng="-62.2724" data-name="Bahía Blanca">
-          <span class="city-opt-name">⚓ Bahía Blanca</span>
-          <span class="city-opt-sub">Bs As</span>
+          <span class="city-opt-name">⚓ Bahía Blanca</span><span class="city-opt-sub">Bs As</span>
         </button>
         <button class="city-option" id="myLocationOption" data-lat="" data-lng="" data-name="">
-          <span class="city-opt-name">🎯 Mi ubicación</span>
-          <span class="city-opt-sub">Detectar ahora</span>
+          <span class="city-opt-name">🎯 Mi ubicación</span><span class="city-opt-sub">Detectar ahora</span>
         </button>
       </div>
     </div>
 
-    <!-- FAB -->
     <button class="fab" id="fabBtn">
       <span>＋</span> Publicar ayuda
     </button>
@@ -1027,19 +347,17 @@
   <button class="pwa-dismiss-btn" id="pwaDismissBtn">✕</button>
 </div>
 
-<!-- TOAST -->
 <div id="toast" class="toast hidden"></div>
 
-<!-- SCRIPTS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 /* ================================================================
-   TU MANO A UNO — Unified App Script
+   TU MANO A UNO — App Script con integración real al backend
 ================================================================ */
 
-// ── CONFIG ────────────────────────────────────────────────────────
 const CONFIG = {
   GOOGLE_CLIENT_ID: '15579611596-cl542m98cnp2ti26ncotbifk2lbi3psn.apps.googleusercontent.com',
+  // ⚠️ IMPORTANTE: reemplazá esto con tu URL de Apps Script desplegado
   APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwbabkHpbxhqkbXfkDBcB4UkaJujnb6WUrHKbv5qDl7gSo7UWO0rthQ-pu5JusPHyhZ/exec',
   APP_NAME: 'Tu Mano a Uno',
   CVU: '0000003100040849915686',
@@ -1048,178 +366,8 @@ const CONFIG = {
   DEFAULT_LNG: -58.3960,
   DEFAULT_ZOOM: 12,
   MAX_POSTS_PER_DAY: 5,
-  MIN_ZOOM: 10,
-  MAX_ZOOM: 18,
 };
 Object.freeze(CONFIG);
-
-// ── MOCK DATA — todos resueltos/terminados ─────────────────────────
-const MOCK_POSTS = [
-  // ── originales → todos solved:true ──────────────────────────
-  {
-    id:'p1', userId:'mock1', userName:'Carolina Méndez',
-    userPhoto:'https://randomuser.me/api/portraits/women/68.jpg',
-    type:'ofrezco', category:'producto',
-    description:'Juguetes didácticos en buen estado. Zona Almagro. Ideales para chicos de 3 a 7 años.',
-    lat:-34.6068, lng:-58.4210, phone:'1156781234',
-    createdAt: Date.now() - 50*3_600_000,
-    locationName:'Almagro, CABA', durationHours:24, solved:true
-  },
-  {
-    id:'p2', userId:'mock2', userName:'José Rojas',
-    userPhoto:'https://randomuser.me/api/portraits/men/32.jpg',
-    type:'necesito', category:'servicio',
-    description:'Necesito profesor de matemáticas para secundario, 2 veces por semana. Zona Balvanera.',
-    lat:-34.5880, lng:-58.3980, phone:'1134556677',
-    createdAt: Date.now() - 36*3_600_000,
-    locationName:'Balvanera', durationHours:24, solved:true
-  },
-  {
-    id:'p3', userId:'mock3', userName:'Lucía Ferreyra',
-    userPhoto:'https://randomuser.me/api/portraits/women/44.jpg',
-    type:'ofrezco', category:'servicio',
-    description:'Clases gratuitas de computación básica los sábados por la mañana. ¡Todos son bienvenidos!',
-    lat:-34.6180, lng:-58.3680, phone:'1169876543',
-    createdAt: Date.now() - 30*3_600_000,
-    locationName:'Palermo', durationHours:24, solved:true
-  },
-  {
-    id:'p4', userId:'mock4', userName:'Gabriel Soto',
-    userPhoto:'https://randomuser.me/api/portraits/men/55.jpg',
-    type:'necesito', category:'producto',
-    description:'Silla de ruedas en préstamo temporal — ya resuelta ✅.',
-    lat:-34.6280, lng:-58.4450, phone:'1122334455',
-    createdAt: Date.now() - 48*3_600_000,
-    locationName:'Flores', durationHours:24, solved:true
-  },
-  {
-    id:'p5', userId:'mock5', userName:'Marta Giménez',
-    userPhoto:'https://randomuser.me/api/portraits/women/90.jpg',
-    type:'ofrezco', category:'producto',
-    description:'Ropa de abrigo para niños — donación entregada ✅.',
-    lat:-34.5690, lng:-58.4140, phone:'1165432109',
-    createdAt: Date.now() - 72*3_600_000,
-    locationName:'Boedo', durationHours:24, solved:true
-  },
-  // ── adicionales para llenar el mapa ─────────────────────────
-  {
-    id:'p6', userId:'mock6', userName:'Andrés Pereyra',
-    userPhoto:'https://randomuser.me/api/portraits/men/12.jpg',
-    type:'ofrezco', category:'producto',
-    description:'Libros de texto secundario (Física, Química, Historia). Zona Caballito. Bien conservados.',
-    lat:-34.6192, lng:-58.4355, phone:'1148889900',
-    createdAt: Date.now() - 60*3_600_000,
-    locationName:'Caballito', durationHours:24, solved:true
-  },
-  {
-    id:'p7', userId:'mock7', userName:'Valentina Ruiz',
-    userPhoto:'https://randomuser.me/api/portraits/women/22.jpg',
-    type:'necesito', category:'servicio',
-    description:'Buscaba acompañante terapéutico para mi hijo de 8 años, turno tarde. Ya resuelto, ¡gracias!',
-    lat:-34.5980, lng:-58.4500, phone:'1177665544',
-    createdAt: Date.now() - 55*3_600_000,
-    locationName:'Villa del Parque', durationHours:24, solved:true
-  },
-  {
-    id:'p8', userId:'mock8', userName:'Ricardo Herrera',
-    userPhoto:'https://randomuser.me/api/portraits/men/77.jpg',
-    type:'ofrezco', category:'servicio',
-    description:'Plomería básica sin cargo para adultos mayores o familias con necesidad. Zona sur CABA.',
-    lat:-34.6410, lng:-58.4010, phone:'1155443322',
-    createdAt: Date.now() - 80*3_600_000,
-    locationName:'Parque Patricios', durationHours:24, solved:true
-  },
-  {
-    id:'p9', userId:'mock9', userName:'Florencia Díaz',
-    userPhoto:'https://randomuser.me/api/portraits/women/55.jpg',
-    type:'ofrezco', category:'producto',
-    description:'Cuna y colchoncito en buen estado, zona Belgrano. Entregado a una familia que lo necesitaba ❤️.',
-    lat:-34.5620, lng:-58.4580, phone:'1199887766',
-    createdAt: Date.now() - 90*3_600_000,
-    locationName:'Belgrano', durationHours:24, solved:true
-  },
-  {
-    id:'p10', userId:'mock10', userName:'Tomás Aguirre',
-    userPhoto:'https://randomuser.me/api/portraits/men/43.jpg',
-    type:'necesito', category:'producto',
-    description:'Necesitaba silla de escritorio para home office. Conseguida, ¡gracias comunidad!',
-    lat:-34.5840, lng:-58.3750, phone:'1133221100',
-    createdAt: Date.now() - 45*3_600_000,
-    locationName:'Recoleta', durationHours:24, solved:true
-  },
-  {
-    id:'p11', userId:'mock11', userName:'Silvia Campos',
-    userPhoto:'https://randomuser.me/api/portraits/women/33.jpg',
-    type:'ofrezco', category:'servicio',
-    description:'Costura y arreglos de ropa sin costo para quienes más lo necesiten. Zona San Cristóbal.',
-    lat:-34.6150, lng:-58.3900, phone:'1144332211',
-    createdAt: Date.now() - 100*3_600_000,
-    locationName:'San Cristóbal', durationHours:24, solved:true
-  },
-  {
-    id:'p12', userId:'mock12', userName:'Ernesto Blanco',
-    userPhoto:'https://randomuser.me/api/portraits/men/63.jpg',
-    type:'necesito', category:'servicio',
-    description:'Busqué ayuda para mover muebles al nuevo departamento. ¡Vecinos increíbles que aparecieron!',
-    lat:-34.6050, lng:-58.4620, phone:'1188776655',
-    createdAt: Date.now() - 70*3_600_000,
-    locationName:'Villa Urquiza', durationHours:24, solved:true
-  },
-  {
-    id:'p13', userId:'mock13', userName:'Paula Sosa',
-    userPhoto:'https://randomuser.me/api/portraits/women/77.jpg',
-    type:'ofrezco', category:'producto',
-    description:'Electrodomésticos en buen estado: licuadora y tostadora. Zona Devoto. Ya entregados.',
-    lat:-34.5990, lng:-58.5020, phone:'1121098765',
-    createdAt: Date.now() - 120*3_600_000,
-    locationName:'Villa Devoto', durationHours:24, solved:true
-  },
-  {
-    id:'p14', userId:'mock14', userName:'Martín Ríos',
-    userPhoto:'https://randomuser.me/api/portraits/men/28.jpg',
-    type:'ofrezco', category:'servicio',
-    description:'Clases de guitarra acústica gratis para menores de 18 años. Zona Once. Cupo cubierto.',
-    lat:-34.6072, lng:-58.4110, phone:'1166554433',
-    createdAt: Date.now() - 110*3_600_000,
-    locationName:'Once', durationHours:24, solved:true
-  },
-  {
-    id:'p15', userId:'mock15', userName:'Natalia Torres',
-    userPhoto:'https://randomuser.me/api/portraits/women/11.jpg',
-    type:'necesito', category:'producto',
-    description:'Necesitaba pañales talle M para mi bebé. Comunidad hermosa que respondió al toque, gracias.',
-    lat:-34.6330, lng:-58.3660, phone:'1110987654',
-    createdAt: Date.now() - 95*3_600_000,
-    locationName:'La Boca', durationHours:24, solved:true
-  },
-  {
-    id:'p16', userId:'mock16', userName:'Diego Molina',
-    userPhoto:'https://randomuser.me/api/portraits/men/91.jpg',
-    type:'ofrezco', category:'servicio',
-    description:'Revisión eléctrica básica sin cargo para familias vulnerables. Zona Constitución.',
-    lat:-34.6280, lng:-58.3810, phone:'1109876543',
-    createdAt: Date.now() - 85*3_600_000,
-    locationName:'Constitución', durationHours:24, solved:true
-  },
-  {
-    id:'p17', userId:'mock17', userName:'Lorena Vega',
-    userPhoto:'https://randomuser.me/api/portraits/women/60.jpg',
-    type:'ofrezco', category:'producto',
-    description:'Medicamentos sin receta vencidos próximamente — donados a una fundación del barrio.',
-    lat:-34.5760, lng:-58.4310, phone:'1187654321',
-    createdAt: Date.now() - 130*3_600_000,
-    locationName:'Colegiales', durationHours:24, solved:true
-  },
-  {
-    id:'p18', userId:'mock18', userName:'Federico Romero',
-    userPhoto:'https://randomuser.me/api/portraits/men/14.jpg',
-    type:'necesito', category:'servicio',
-    description:'Buscaba alguien que hablara inglés para ayudarme con una entrevista laboral. ¡Lo conseguí!',
-    lat:-34.5900, lng:-58.3620, phone:'1176543210',
-    createdAt: Date.now() - 40*3_600_000,
-    locationName:'Puerto Madero', durationHours:24, solved:true
-  },
-];
 
 // ── STATE ─────────────────────────────────────────────────────────
 let currentUser = null;
@@ -1229,7 +377,7 @@ let currentLocationCoords = null;
 let currentFormLocation = null;
 let activeFormType = 'ofrezco';
 let activeFormCat = 'producto';
-let allPosts = [...MOCK_POSTS];
+let allPosts = [];
 let countdownIntervals = [];
 let deferredPwaPrompt = null;
 
@@ -1252,9 +400,9 @@ function parseJwt(token) {
 function computeRemaining(post) {
   if (post.solved) return { percent:0, text:'Resuelto', cls:'' };
   const elapsed = (Date.now() - new Date(post.createdAt).getTime()) / 3_600_000;
-  const left = Math.max(0, post.durationHours - elapsed);
+  const left = Math.max(0, (post.durationHours || 24) - elapsed);
   if (left <= 0) return { percent:0, text:'Expirado', cls:'' };
-  const pct = (left / post.durationHours) * 100;
+  const pct = (left / (post.durationHours || 24)) * 100;
   const h = Math.floor(left);
   const m = Math.floor((left - h) * 60);
   const text = h > 0 ? `${h}h ${m}m restantes` : `${m}m restantes`;
@@ -1265,7 +413,7 @@ function computeRemaining(post) {
 function isClosed(post) {
   if (post.solved) return true;
   const elapsed = (Date.now() - new Date(post.createdAt).getTime()) / 3_600_000;
-  return elapsed >= post.durationHours;
+  return elapsed >= (post.durationHours || 24);
 }
 
 // ── TOAST ─────────────────────────────────────────────────────────
@@ -1276,6 +424,106 @@ function showToast(msg, type='info') {
   el.className = `toast ${type}`;
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => { el.classList.add('hidden'); }, 3200);
+}
+
+// ── BACKEND API ───────────────────────────────────────────────────
+// Usa fetch con JSONP fallback para evitar problemas de CORS con Apps Script
+async function apiCall(params) {
+  // Apps Script con CORS requiere usar no-cors o JSONP
+  // Usamos el truco de iframe/script para JSONP
+  return new Promise((resolve, reject) => {
+    const callbackName = 'tmu_cb_' + Date.now();
+    const url = new URL(CONFIG.APPS_SCRIPT_URL);
+    Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, v));
+    url.searchParams.set('callback', callbackName);
+
+    window[callbackName] = (data) => {
+      delete window[callbackName];
+      script.remove();
+      resolve(data);
+    };
+
+    const script = document.createElement('script');
+    script.src = url.toString();
+    script.onerror = () => {
+      delete window[callbackName];
+      script.remove();
+      reject(new Error('Network error'));
+    };
+    setTimeout(() => {
+      if (window[callbackName]) {
+        delete window[callbackName];
+        script.remove();
+        reject(new Error('Timeout'));
+      }
+    }, 15000);
+    document.head.appendChild(script);
+  });
+}
+
+async function apiPost(data) {
+  // Para POST usamos fetch con mode no-cors (no vemos respuesta)
+  // Alternativa: convertir a GET con parámetros
+  const url = new URL(CONFIG.APPS_SCRIPT_URL);
+  Object.entries(data).forEach(([k,v]) => {
+    if (v !== undefined && v !== null) url.searchParams.set(k, String(v));
+  });
+  
+  return new Promise((resolve, reject) => {
+    const callbackName = 'tmu_post_cb_' + Date.now();
+    url.searchParams.set('callback', callbackName);
+    
+    window[callbackName] = (responseData) => {
+      delete window[callbackName];
+      script.remove();
+      resolve(responseData);
+    };
+
+    const script = document.createElement('script');
+    script.src = url.toString();
+    script.onerror = () => {
+      delete window[callbackName];
+      script.remove();
+      reject(new Error('Network error'));
+    };
+    setTimeout(() => {
+      if (window[callbackName]) {
+        delete window[callbackName];
+        script.remove();
+        reject(new Error('Timeout'));
+      }
+    }, 15000);
+    document.head.appendChild(script);
+  });
+}
+
+// ── CARGAR POSTS DESDE BACKEND ────────────────────────────────────
+async function loadPostsFromBackend() {
+  document.getElementById('mapLoading').classList.remove('hidden');
+  try {
+    const result = await apiCall({ action: 'getPosts' });
+    if (result && result.success && Array.isArray(result.posts)) {
+      allPosts = result.posts.map(p => ({
+        ...p,
+        lat: parseFloat(p.lat),
+        lng: parseFloat(p.lng),
+        createdAt: p.createdAt ? new Date(p.createdAt).getTime() : Date.now(),
+        durationHours: parseInt(p.durationHours) || 24,
+        solved: p.solved === true || p.solved === 'true',
+      }));
+      renderAllPosts();
+      if (allPosts.length === 0) {
+        showToast('No hay publicaciones activas aún. ¡Sé el primero!', 'info');
+      }
+    } else {
+      console.warn('Backend respondió sin posts:', result);
+    }
+  } catch (err) {
+    console.error('Error cargando posts:', err);
+    showToast('No se pudieron cargar las publicaciones. Revisá tu conexión.', 'error');
+  } finally {
+    document.getElementById('mapLoading').classList.add('hidden');
+  }
 }
 
 // ── GOOGLE AUTH ───────────────────────────────────────────────────
@@ -1365,8 +613,6 @@ function initMap() {
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     maxZoom:19, minZoom:10
   }).addTo(mapInstance);
-
-  renderAllPosts();
 }
 
 function renderAllPosts() {
@@ -1422,7 +668,6 @@ function renderAllPosts() {
   });
 }
 
-// Polling para detectar posts que caducan en tiempo real
 function startExpiryWatcher() {
   setInterval(() => {
     let changed = false;
@@ -1433,14 +678,13 @@ function startExpiryWatcher() {
       }
     });
     if (changed) renderAllPosts();
-  }, 60_000); // cada minuto
+  }, 60_000);
 }
 
 // ── DETAIL MODAL ──────────────────────────────────────────────────
 function openDetail(post) {
   const closed = isClosed(post);
   const rem = computeRemaining(post);
-  // Cualquier usuario puede ver el detalle — solo contactar requiere login
   const isOwner = currentUser && post.userId === currentUser.id;
   const typeBadgeClass = closed ? 'badge-resolved' : (post.type==='ofrezco' ? 'badge-ofrezco' : 'badge-necesito');
   const typeText = post.type==='ofrezco' ? '🙌 Ofrezco' : '🤝 Necesito';
@@ -1571,31 +815,58 @@ async function publishPost() {
   btn.innerHTML = '<span class="spinner"></span> Publicando…';
   btn.disabled = true;
 
-  await new Promise(r => setTimeout(r, 600));
-
-  const newPost = {
-    id: 'p' + Date.now(),
+  const postData = {
+    action: 'createPost',
     userId: currentUser.id,
     userName: currentUser.name,
-    userPhoto: currentUser.photo,
+    userPhoto: currentUser.photo || '',
     type: activeFormType,
     category: activeFormCat,
     description: desc,
-    phone,
+    phone: phone,
     lat: currentFormLocation.lat,
     lng: currentFormLocation.lng,
     locationName: currentFormLocation.city || 'Tu ciudad',
-    createdAt: Date.now(),
-    durationHours: 24,
-    solved: false,
+    maxDailyPosts: CONFIG.MAX_POSTS_PER_DAY,
   };
-  allPosts.unshift(newPost);
-  renderAllPosts();
-  document.getElementById('postModal').classList.add('hidden');
-  showToast('¡Publicación creada! Ya aparece en el mapa.', 'success');
 
-  btn.innerHTML = 'Publicar';
-  btn.disabled = false;
+  try {
+    const result = await apiPost(postData);
+
+    if (result && result.success) {
+      // Agregar el post localmente con los datos que devuelve el servidor
+      const newPost = {
+        ...(result.post || postData),
+        id: result.post?.id || ('local_' + Date.now()),
+        createdAt: result.post?.createdAt ? new Date(result.post.createdAt).getTime() : Date.now(),
+        durationHours: 24,
+        solved: false,
+        lat: currentFormLocation.lat,
+        lng: currentFormLocation.lng,
+        locationName: currentFormLocation.city || 'Tu ciudad',
+        userName: currentUser.name,
+        userPhoto: currentUser.photo || '',
+        userId: currentUser.id,
+        type: activeFormType,
+        category: activeFormCat,
+        description: desc,
+        phone: phone,
+      };
+      allPosts.unshift(newPost);
+      renderAllPosts();
+      document.getElementById('postModal').classList.add('hidden');
+      showToast('¡Publicación creada! Ya aparece en el mapa. 🗺️', 'success');
+    } else {
+      const msg = result?.error || 'Error al publicar. Intentá de nuevo.';
+      showToast(msg, 'error');
+    }
+  } catch (err) {
+    console.error('Error publicando:', err);
+    showToast('No se pudo conectar con el servidor. Revisá tu conexión.', 'error');
+  } finally {
+    btn.innerHTML = 'Publicar';
+    btn.disabled = false;
+  }
 }
 
 // ── CITY PICKER ───────────────────────────────────────────────────
@@ -1608,66 +879,23 @@ function selectCity(lat, lng, name) {
 
 // ── PWA ───────────────────────────────────────────────────────────
 function initPWA() {
-  // Inyectar manifest dinámico
   const manifest = {
-    name: 'Tu Mano a Uno',
-    short_name: 'Mano a Uno',
+    name: 'Tu Mano a Uno', short_name: 'Mano a Uno',
     description: 'Conectate con personas que necesitan o pueden ofrecer ayuda en tu comunidad.',
-    start_url: '/',
-    display: 'standalone',
-    background_color: '#ffffff',
-    theme_color: '#5BABCC',
-    orientation: 'portrait',
+    start_url: '/', display: 'standalone',
+    background_color: '#ffffff', theme_color: '#5BABCC', orientation: 'portrait',
     icons: [
-      {
-        src: 'https://ui-avatars.com/api/?background=2C7DA0&color=fff&name=M&size=192&bold=true',
-        sizes: '192x192',
-        type: 'image/png'
-      },
-      {
-        src: 'https://ui-avatars.com/api/?background=2C7DA0&color=fff&name=M&size=512&bold=true',
-        sizes: '512x512',
-        type: 'image/png'
-      }
+      { src:'https://ui-avatars.com/api/?background=2C7DA0&color=fff&name=M&size=192&bold=true', sizes:'192x192', type:'image/png' },
+      { src:'https://ui-avatars.com/api/?background=2C7DA0&color=fff&name=M&size=512&bold=true', sizes:'512x512', type:'image/png' }
     ]
   };
   const blob = new Blob([JSON.stringify(manifest)], { type:'application/json' });
-  const manifestUrl = URL.createObjectURL(blob);
-  document.getElementById('pwaManifest').href = manifestUrl;
+  document.getElementById('pwaManifest').href = URL.createObjectURL(blob);
 
-  // Service Worker inline
-  const swCode = `
-const CACHE = 'tmu-v1';
-const STATIC = ['/'];
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(STATIC).catch(()=>{})));
-  self.skipWaiting();
-});
-self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(keys =>
-    Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-  ));
-  self.clients.claim();
-});
-self.addEventListener('fetch', e => {
-  if (e.request.method !== 'GET') return;
-  e.respondWith(
-    fetch(e.request).catch(() => caches.match(e.request))
-  );
-});
-  `;
-  const swBlob = new Blob([swCode], { type:'application/javascript' });
-  const swUrl = URL.createObjectURL(swBlob);
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register(swUrl, { scope:'/' }).catch(()=>{});
-  }
-
-  // Banner de instalación (Android/Chrome)
   window.addEventListener('beforeinstallprompt', e => {
     e.preventDefault();
     deferredPwaPrompt = e;
-    const dismissed = sessionStorage.getItem('pwa_dismissed');
-    if (!dismissed) {
+    if (!sessionStorage.getItem('pwa_dismissed')) {
       setTimeout(() => document.getElementById('pwaBanner').classList.remove('hidden'), 2000);
     }
   });
@@ -1686,23 +914,18 @@ self.addEventListener('fetch', e => {
     sessionStorage.setItem('pwa_dismissed', '1');
   };
 
-  // iOS: mostrar instrucción manual si está en Safari y no está instalado
   const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
   const isStandalone = ('standalone' in navigator && navigator.standalone);
-  if (isIos && !isStandalone) {
-    const dismissed = sessionStorage.getItem('pwa_dismissed');
-    if (!dismissed) {
-      setTimeout(() => {
-        showToast('iOS: tocá el botón Compartir y luego "Agregar a pantalla de inicio" 📲', 'info');
-        sessionStorage.setItem('pwa_dismissed', '1');
-      }, 3000);
-    }
+  if (isIos && !isStandalone && !sessionStorage.getItem('pwa_dismissed')) {
+    setTimeout(() => {
+      showToast('iOS: tocá Compartir → "Agregar a pantalla de inicio" 📲');
+      sessionStorage.setItem('pwa_dismissed', '1');
+    }, 3000);
   }
 }
 
 // ── EVENTS ────────────────────────────────────────────────────────
 function bindEvents() {
-  // Avatar dropdown
   document.getElementById('avatarWrap').onclick = e => {
     e.stopPropagation();
     document.getElementById('dropdownMenu').classList.toggle('hidden');
@@ -1714,7 +937,6 @@ function bindEvents() {
   document.getElementById('loginBtn').onclick = e => { e.stopPropagation(); signIn(); };
   document.getElementById('logoutBtn').onclick = e => { e.stopPropagation(); logout(); };
 
-  // Donate
   document.getElementById('donarBtn').onclick = () => document.getElementById('donateModal').classList.remove('hidden');
   document.getElementById('closeDonateModal').onclick = () => document.getElementById('donateModal').classList.add('hidden');
   document.getElementById('copyCvuBtn').onclick = () => {
@@ -1722,30 +944,25 @@ function bindEvents() {
     showToast('CVU copiado 📋', 'success');
   };
 
-  // FAB / Publish
   document.getElementById('fabBtn').onclick = openPublishModal;
   document.getElementById('closePostModal').onclick = () => document.getElementById('postModal').classList.add('hidden');
   document.getElementById('publishBtn').onclick = publishPost;
 
-  // Detail
   document.getElementById('closeDetailModal').onclick = () => {
     document.getElementById('detailModal').classList.add('hidden');
     countdownIntervals.forEach(clearInterval);
     countdownIntervals = [];
   };
 
-  // Form toggles
   document.getElementById('tipoOfrezco').onclick = () => setFormType('ofrezco');
   document.getElementById('tipoNecesito').onclick = () => setFormType('necesito');
   document.getElementById('catProducto').onclick = () => setFormCat('producto');
   document.getElementById('catServicio').onclick = () => setFormCat('servicio');
 
-  // Desc counter
   document.getElementById('postDesc').oninput = e => {
     document.getElementById('descCounter').textContent = `${e.target.value.length} / 300`;
   };
 
-  // City picker
   document.getElementById('citySelectBtn').onclick = e => {
     e.stopPropagation();
     document.getElementById('cityPicker').classList.toggle('hidden');
@@ -1753,9 +970,6 @@ function bindEvents() {
   document.getElementById('cityPicker').onclick = e => e.stopPropagation();
   document.querySelectorAll('.city-option').forEach(btn => {
     btn.onclick = async () => {
-      const lat = parseFloat(btn.dataset.lat);
-      const lng = parseFloat(btn.dataset.lng);
-      const name = btn.dataset.name;
       if (btn.id === 'myLocationOption') {
         document.getElementById('cityLabel').textContent = 'Detectando…';
         document.getElementById('cityPicker').classList.add('hidden');
@@ -1771,19 +985,15 @@ function bindEvents() {
         }
         return;
       }
-      selectCity(lat, lng, name);
+      selectCity(parseFloat(btn.dataset.lat), parseFloat(btn.dataset.lng), btn.dataset.name);
     };
   });
 
-  // Pinch zoom prevention on map (iOS fix)
   document.getElementById('map').addEventListener('gesturestart', e => e.preventDefault(), { passive:false });
 
-  // Close modals on overlay click
   ['postModal','detailModal','donateModal'].forEach(id => {
     document.getElementById(id).onclick = e => {
-      if (e.target === document.getElementById(id)) {
-        document.getElementById(id).classList.add('hidden');
-      }
+      if (e.target === document.getElementById(id)) document.getElementById(id).classList.add('hidden');
     };
   });
 }
@@ -1793,7 +1003,6 @@ function setFormType(type) {
   document.getElementById('tipoOfrezco').classList.toggle('active', type==='ofrezco');
   document.getElementById('tipoNecesito').classList.toggle('active', type==='necesito');
 }
-
 function setFormCat(cat) {
   activeFormCat = cat;
   document.getElementById('catProducto').classList.toggle('active', cat==='producto');
@@ -1808,6 +1017,7 @@ window.addEventListener('load', () => {
   initLocation();
   initPWA();
   startExpiryWatcher();
+  loadPostsFromBackend();  // ← carga real desde Google Sheets
 });
 </script>
 </body>
