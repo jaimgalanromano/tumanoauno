@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#5BABCC" />
   <meta name="description" content="Tu Mano a Uno – Conectá con personas que necesitan o pueden ofrecer ayuda en tu comunidad." />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Mano a Uno" />
+  <link rel="manifest" id="pwaManifest" />
+  <link rel="apple-touch-icon" href="https://ui-avatars.com/api/?background=2C7DA0&color=fff&name=M&size=180&bold=true&rounded=true" />
   <title>Tu Mano a Uno</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -37,14 +43,15 @@
       --radius-lg:  28px;
       --radius-xl:  40px;
       --transition: 200ms cubic-bezier(0.4,0,0.2,1);
+      --header-h:   60px;
     }
 
     * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
-    body {
+    html, body {
       font-family:'Nunito', sans-serif;
       background:var(--gray-100);
-      height:100dvh;
+      height:100%;
       overflow:hidden;
       color:var(--gray-900);
     }
@@ -55,6 +62,7 @@
       flex-direction:column;
       height:100dvh;
       position:relative;
+      overflow:hidden;
     }
 
     /* ─── HEADER ──────────────────────────────────────────────── */
@@ -66,8 +74,10 @@
       padding:10px 16px;
       border-bottom:1px solid rgba(0,0,0,0.06);
       box-shadow:var(--shadow-sm);
-      z-index:20;
+      z-index:100;
       flex-shrink:0;
+      height:var(--header-h);
+      position:relative;
     }
     .logo {
       display:flex;
@@ -195,6 +205,7 @@
       flex:1;
       position:relative;
       overflow:hidden;
+      min-height:0;
     }
     #map {
       position:absolute;
@@ -299,93 +310,6 @@
       margin-top:1px;
     }
 
-    /* ─── ZOOM SLIDER ─────────────────────────────────────────── */
-    .zoom-control {
-      position:absolute;
-      bottom:90px; right:14px;
-      z-index:10;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:6px;
-      background:rgba(255,255,255,0.92);
-      backdrop-filter:blur(12px);
-      -webkit-backdrop-filter:blur(12px);
-      border-radius:var(--radius-xl);
-      padding:10px 7px;
-      box-shadow:var(--shadow-md);
-      border:1px solid rgba(255,255,255,0.8);
-    }
-    .zoom-icon-btn {
-      background:none; border:none;
-      cursor:pointer;
-      width:28px; height:28px;
-      display:flex; align-items:center; justify-content:center;
-      font-size:18px;
-      color:var(--gray-700);
-      border-radius:8px;
-      transition:background var(--transition);
-      font-weight:800;
-      line-height:1;
-    }
-    .zoom-icon-btn:hover { background:var(--gray-100); }
-    .zoom-slider-wrap {
-      position:relative;
-      height:90px;
-      width:24px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-    .zoom-track {
-      position:absolute;
-      left:50%; transform:translateX(-50%);
-      width:4px;
-      height:90px;
-      background:var(--gray-100);
-      border-radius:4px;
-      overflow:hidden;
-    }
-    .zoom-fill {
-      position:absolute;
-      bottom:0; left:0; right:0;
-      background:linear-gradient(to top, var(--blue-dark), var(--blue));
-      border-radius:4px;
-      transition:height 0.1s ease;
-    }
-    .zoom-thumb-input {
-      -webkit-appearance:none;
-      appearance:none;
-      writing-mode:vertical-lr;
-      direction:rtl;
-      width:90px; height:24px;
-      background:transparent;
-      cursor:pointer;
-      transform:rotate(-90deg);
-      position:absolute;
-      margin:0;
-      z-index:2;
-    }
-    .zoom-thumb-input::-webkit-slider-thumb {
-      -webkit-appearance:none;
-      width:18px; height:18px;
-      border-radius:50%;
-      background:var(--white);
-      border:2.5px solid var(--blue-dark);
-      box-shadow:0 1px 4px rgba(0,0,0,0.18);
-      cursor:pointer;
-      transition:border-color var(--transition);
-    }
-    .zoom-thumb-input::-webkit-slider-runnable-track { background:transparent; }
-    .zoom-thumb-input::-moz-range-thumb {
-      width:18px; height:18px;
-      border-radius:50%;
-      background:var(--white);
-      border:2.5px solid var(--blue-dark);
-      box-shadow:0 1px 4px rgba(0,0,0,0.18);
-      cursor:pointer;
-    }
-
     /* ─── FAB ─────────────────────────────────────────────────── */
     .fab {
       position:absolute;
@@ -423,12 +347,12 @@
     }
     .cm-ofrezco { background:var(--blue); }
     .cm-necesito { background:var(--orange); }
-    .cm-resolved { background:var(--gray-300); opacity:0.7; }
+    .cm-resolved { background:var(--gray-400,#a0aab4); opacity:0.75; }
 
     /* Popup minicard */
     .leaflet-popup-content-wrapper {
-      border-radius:var(--radius-md) !important;
-      box-shadow:var(--shadow-lg) !important;
+      border-radius:18px !important;
+      box-shadow:0 8px 32px rgba(0,0,0,0.14) !important;
       border:none !important;
       padding:0 !important;
       overflow:hidden;
@@ -808,7 +732,6 @@
       border-radius:var(--radius-md);
       padding:14px;
       margin-bottom:16px;
-      position:relative;
     }
     .cvu-label {
       font-size:0.7rem;
@@ -840,6 +763,62 @@
       transition:background var(--transition);
     }
     .btn-copy:hover { background:var(--blue-light); }
+
+    /* ─── PWA INSTALL BANNER ──────────────────────────────────── */
+    .pwa-banner {
+      position:fixed;
+      bottom:0; left:0; right:0;
+      z-index:600;
+      background:var(--white);
+      border-top:1px solid var(--gray-100);
+      padding:14px 18px calc(14px + env(safe-area-inset-bottom));
+      box-shadow:0 -4px 20px rgba(0,0,0,0.10);
+      display:flex;
+      align-items:center;
+      gap:12px;
+      animation:slideUp 0.3s ease;
+    }
+    .pwa-banner.hidden { display:none; }
+    .pwa-banner-icon {
+      width:44px; height:44px;
+      background:linear-gradient(135deg, var(--blue), var(--blue-dark));
+      border-radius:12px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:22px;
+      flex-shrink:0;
+    }
+    .pwa-banner-text { flex:1; }
+    .pwa-banner-title {
+      font-weight:800; font-size:0.88rem;
+      color:var(--gray-900);
+    }
+    .pwa-banner-sub {
+      font-size:0.75rem;
+      color:var(--gray-500);
+      font-weight:600;
+    }
+    .pwa-install-btn {
+      background:var(--blue-dark);
+      color:white;
+      border:none;
+      border-radius:var(--radius-xl);
+      padding:9px 15px;
+      font-family:inherit;
+      font-size:0.8rem;
+      font-weight:700;
+      cursor:pointer;
+      white-space:nowrap;
+      flex-shrink:0;
+    }
+    .pwa-dismiss-btn {
+      background:none;
+      border:none;
+      color:var(--gray-500);
+      font-size:1.1rem;
+      cursor:pointer;
+      padding:4px;
+      flex-shrink:0;
+    }
 
     /* ─── TOAST ───────────────────────────────────────────────── */
     .toast {
@@ -879,6 +858,7 @@
 
     /* ─── LEAFLET OVERRIDES ───────────────────────────────────── */
     .leaflet-control-attribution { display:none !important; }
+    .leaflet-control-zoom { display:none !important; }
     .leaflet-container { cursor:default !important; }
 
     /* ─── REDUCED MOTION ──────────────────────────────────────── */
@@ -956,16 +936,6 @@
       </div>
     </div>
 
-    <!-- ZOOM CONTROL -->
-    <div class="zoom-control">
-      <button class="zoom-icon-btn" id="zoomInBtn" title="Acercar">+</button>
-      <div class="zoom-slider-wrap">
-        <div class="zoom-track"><div class="zoom-fill" id="zoomFill"></div></div>
-        <input type="range" class="zoom-thumb-input" id="zoomSlider" min="10" max="18" value="12" step="1">
-      </div>
-      <button class="zoom-icon-btn" id="zoomOutBtn" title="Alejar">−</button>
-    </div>
-
     <!-- FAB -->
     <button class="fab" id="fabBtn">
       <span>＋</span> Publicar ayuda
@@ -982,25 +952,21 @@
       <button class="sheet-close" id="closePostModal">✕</button>
     </div>
     <div class="sheet-body">
-      <!-- Tipo: ofrezco / necesito -->
       <label class="form-label">¿Qué querés hacer?</label>
       <div class="segment-group" id="tipoGroup">
         <button class="seg-btn active ofrezco" data-val="ofrezco" id="tipoOfrezco">🙌 Ofrezco</button>
         <button class="seg-btn necesito" data-val="necesito" id="tipoNecesito">🤝 Necesito</button>
       </div>
-      <!-- Categoría -->
       <label class="form-label">Tipo</label>
       <div class="segment-group" id="catGroup">
         <button class="seg-btn active" data-val="producto" id="catProducto">📦 Producto</button>
         <button class="seg-btn" data-val="servicio" id="catServicio">⚙️ Servicio</button>
       </div>
-      <!-- Descripción -->
       <div class="form-row">
         <label class="form-label" for="postDesc">Descripción</label>
         <textarea id="postDesc" class="form-field" rows="3" placeholder="Ej: Dono ropa para adultos, zona Palermo…" maxlength="300"></textarea>
         <div style="text-align:right;font-size:0.7rem;color:var(--gray-500);margin-top:3px;" id="descCounter">0 / 300</div>
       </div>
-      <!-- Teléfono -->
       <div class="form-row">
         <label class="form-label" for="postPhone">WhatsApp (sin 0 ni 15)</label>
         <div class="phone-wrap">
@@ -1008,7 +974,6 @@
           <input type="tel" id="postPhone" class="form-field" placeholder="1137881082" maxlength="12">
         </div>
       </div>
-      <!-- Ubicación -->
       <div class="loc-status" id="locStatus">
         <div class="loc-dot" id="locDot"></div>
         <span id="locText">Obteniendo ubicación…</span>
@@ -1051,6 +1016,17 @@
   </div>
 </div>
 
+<!-- PWA INSTALL BANNER -->
+<div class="pwa-banner hidden" id="pwaBanner">
+  <div class="pwa-banner-icon">🤝</div>
+  <div class="pwa-banner-text">
+    <div class="pwa-banner-title">Instalá la app</div>
+    <div class="pwa-banner-sub">Accedé rápido desde tu pantalla</div>
+  </div>
+  <button class="pwa-install-btn" id="pwaInstallBtn">Instalar</button>
+  <button class="pwa-dismiss-btn" id="pwaDismissBtn">✕</button>
+</div>
+
 <!-- TOAST -->
 <div id="toast" class="toast hidden"></div>
 
@@ -1077,16 +1053,17 @@ const CONFIG = {
 };
 Object.freeze(CONFIG);
 
-// ── MOCK DATA ─────────────────────────────────────────────────────
+// ── MOCK DATA — todos resueltos/terminados ─────────────────────────
 const MOCK_POSTS = [
+  // ── originales → todos solved:true ──────────────────────────
   {
     id:'p1', userId:'mock1', userName:'Carolina Méndez',
     userPhoto:'https://randomuser.me/api/portraits/women/68.jpg',
     type:'ofrezco', category:'producto',
     description:'Juguetes didácticos en buen estado. Zona Almagro. Ideales para chicos de 3 a 7 años.',
     lat:-34.6068, lng:-58.4210, phone:'1156781234',
-    createdAt: Date.now() - 3_600_000,
-    locationName:'Almagro, CABA', durationHours:24, solved:false
+    createdAt: Date.now() - 50*3_600_000,
+    locationName:'Almagro, CABA', durationHours:24, solved:true
   },
   {
     id:'p2', userId:'mock2', userName:'José Rojas',
@@ -1094,8 +1071,8 @@ const MOCK_POSTS = [
     type:'necesito', category:'servicio',
     description:'Necesito profesor de matemáticas para secundario, 2 veces por semana. Zona Balvanera.',
     lat:-34.5880, lng:-58.3980, phone:'1134556677',
-    createdAt: Date.now() - 2*3_600_000,
-    locationName:'Balvanera', durationHours:24, solved:false
+    createdAt: Date.now() - 36*3_600_000,
+    locationName:'Balvanera', durationHours:24, solved:true
   },
   {
     id:'p3', userId:'mock3', userName:'Lucía Ferreyra',
@@ -1103,14 +1080,14 @@ const MOCK_POSTS = [
     type:'ofrezco', category:'servicio',
     description:'Clases gratuitas de computación básica los sábados por la mañana. ¡Todos son bienvenidos!',
     lat:-34.6180, lng:-58.3680, phone:'1169876543',
-    createdAt: Date.now() - 10*3_600_000,
-    locationName:'Palermo', durationHours:24, solved:false
+    createdAt: Date.now() - 30*3_600_000,
+    locationName:'Palermo', durationHours:24, solved:true
   },
   {
     id:'p4', userId:'mock4', userName:'Gabriel Soto',
     userPhoto:'https://randomuser.me/api/portraits/men/55.jpg',
     type:'necesito', category:'producto',
-    description:'Silla de ruedas en préstamo temporal (ya resuelto ✅).',
+    description:'Silla de ruedas en préstamo temporal — ya resuelta ✅.',
     lat:-34.6280, lng:-58.4450, phone:'1122334455',
     createdAt: Date.now() - 48*3_600_000,
     locationName:'Flores', durationHours:24, solved:true
@@ -1119,11 +1096,129 @@ const MOCK_POSTS = [
     id:'p5', userId:'mock5', userName:'Marta Giménez',
     userPhoto:'https://randomuser.me/api/portraits/women/90.jpg',
     type:'ofrezco', category:'producto',
-    description:'Ropa de abrigo para niños (donación finalizada).',
+    description:'Ropa de abrigo para niños — donación entregada ✅.',
     lat:-34.5690, lng:-58.4140, phone:'1165432109',
     createdAt: Date.now() - 72*3_600_000,
     locationName:'Boedo', durationHours:24, solved:true
-  }
+  },
+  // ── adicionales para llenar el mapa ─────────────────────────
+  {
+    id:'p6', userId:'mock6', userName:'Andrés Pereyra',
+    userPhoto:'https://randomuser.me/api/portraits/men/12.jpg',
+    type:'ofrezco', category:'producto',
+    description:'Libros de texto secundario (Física, Química, Historia). Zona Caballito. Bien conservados.',
+    lat:-34.6192, lng:-58.4355, phone:'1148889900',
+    createdAt: Date.now() - 60*3_600_000,
+    locationName:'Caballito', durationHours:24, solved:true
+  },
+  {
+    id:'p7', userId:'mock7', userName:'Valentina Ruiz',
+    userPhoto:'https://randomuser.me/api/portraits/women/22.jpg',
+    type:'necesito', category:'servicio',
+    description:'Buscaba acompañante terapéutico para mi hijo de 8 años, turno tarde. Ya resuelto, ¡gracias!',
+    lat:-34.5980, lng:-58.4500, phone:'1177665544',
+    createdAt: Date.now() - 55*3_600_000,
+    locationName:'Villa del Parque', durationHours:24, solved:true
+  },
+  {
+    id:'p8', userId:'mock8', userName:'Ricardo Herrera',
+    userPhoto:'https://randomuser.me/api/portraits/men/77.jpg',
+    type:'ofrezco', category:'servicio',
+    description:'Plomería básica sin cargo para adultos mayores o familias con necesidad. Zona sur CABA.',
+    lat:-34.6410, lng:-58.4010, phone:'1155443322',
+    createdAt: Date.now() - 80*3_600_000,
+    locationName:'Parque Patricios', durationHours:24, solved:true
+  },
+  {
+    id:'p9', userId:'mock9', userName:'Florencia Díaz',
+    userPhoto:'https://randomuser.me/api/portraits/women/55.jpg',
+    type:'ofrezco', category:'producto',
+    description:'Cuna y colchoncito en buen estado, zona Belgrano. Entregado a una familia que lo necesitaba ❤️.',
+    lat:-34.5620, lng:-58.4580, phone:'1199887766',
+    createdAt: Date.now() - 90*3_600_000,
+    locationName:'Belgrano', durationHours:24, solved:true
+  },
+  {
+    id:'p10', userId:'mock10', userName:'Tomás Aguirre',
+    userPhoto:'https://randomuser.me/api/portraits/men/43.jpg',
+    type:'necesito', category:'producto',
+    description:'Necesitaba silla de escritorio para home office. Conseguida, ¡gracias comunidad!',
+    lat:-34.5840, lng:-58.3750, phone:'1133221100',
+    createdAt: Date.now() - 45*3_600_000,
+    locationName:'Recoleta', durationHours:24, solved:true
+  },
+  {
+    id:'p11', userId:'mock11', userName:'Silvia Campos',
+    userPhoto:'https://randomuser.me/api/portraits/women/33.jpg',
+    type:'ofrezco', category:'servicio',
+    description:'Costura y arreglos de ropa sin costo para quienes más lo necesiten. Zona San Cristóbal.',
+    lat:-34.6150, lng:-58.3900, phone:'1144332211',
+    createdAt: Date.now() - 100*3_600_000,
+    locationName:'San Cristóbal', durationHours:24, solved:true
+  },
+  {
+    id:'p12', userId:'mock12', userName:'Ernesto Blanco',
+    userPhoto:'https://randomuser.me/api/portraits/men/63.jpg',
+    type:'necesito', category:'servicio',
+    description:'Busqué ayuda para mover muebles al nuevo departamento. ¡Vecinos increíbles que aparecieron!',
+    lat:-34.6050, lng:-58.4620, phone:'1188776655',
+    createdAt: Date.now() - 70*3_600_000,
+    locationName:'Villa Urquiza', durationHours:24, solved:true
+  },
+  {
+    id:'p13', userId:'mock13', userName:'Paula Sosa',
+    userPhoto:'https://randomuser.me/api/portraits/women/77.jpg',
+    type:'ofrezco', category:'producto',
+    description:'Electrodomésticos en buen estado: licuadora y tostadora. Zona Devoto. Ya entregados.',
+    lat:-34.5990, lng:-58.5020, phone:'1121098765',
+    createdAt: Date.now() - 120*3_600_000,
+    locationName:'Villa Devoto', durationHours:24, solved:true
+  },
+  {
+    id:'p14', userId:'mock14', userName:'Martín Ríos',
+    userPhoto:'https://randomuser.me/api/portraits/men/28.jpg',
+    type:'ofrezco', category:'servicio',
+    description:'Clases de guitarra acústica gratis para menores de 18 años. Zona Once. Cupo cubierto.',
+    lat:-34.6072, lng:-58.4110, phone:'1166554433',
+    createdAt: Date.now() - 110*3_600_000,
+    locationName:'Once', durationHours:24, solved:true
+  },
+  {
+    id:'p15', userId:'mock15', userName:'Natalia Torres',
+    userPhoto:'https://randomuser.me/api/portraits/women/11.jpg',
+    type:'necesito', category:'producto',
+    description:'Necesitaba pañales talle M para mi bebé. Comunidad hermosa que respondió al toque, gracias.',
+    lat:-34.6330, lng:-58.3660, phone:'1110987654',
+    createdAt: Date.now() - 95*3_600_000,
+    locationName:'La Boca', durationHours:24, solved:true
+  },
+  {
+    id:'p16', userId:'mock16', userName:'Diego Molina',
+    userPhoto:'https://randomuser.me/api/portraits/men/91.jpg',
+    type:'ofrezco', category:'servicio',
+    description:'Revisión eléctrica básica sin cargo para familias vulnerables. Zona Constitución.',
+    lat:-34.6280, lng:-58.3810, phone:'1109876543',
+    createdAt: Date.now() - 85*3_600_000,
+    locationName:'Constitución', durationHours:24, solved:true
+  },
+  {
+    id:'p17', userId:'mock17', userName:'Lorena Vega',
+    userPhoto:'https://randomuser.me/api/portraits/women/60.jpg',
+    type:'ofrezco', category:'producto',
+    description:'Medicamentos sin receta vencidos próximamente — donados a una fundación del barrio.',
+    lat:-34.5760, lng:-58.4310, phone:'1187654321',
+    createdAt: Date.now() - 130*3_600_000,
+    locationName:'Colegiales', durationHours:24, solved:true
+  },
+  {
+    id:'p18', userId:'mock18', userName:'Federico Romero',
+    userPhoto:'https://randomuser.me/api/portraits/men/14.jpg',
+    type:'necesito', category:'servicio',
+    description:'Buscaba alguien que hablara inglés para ayudarme con una entrevista laboral. ¡Lo conseguí!',
+    lat:-34.5900, lng:-58.3620, phone:'1176543210',
+    createdAt: Date.now() - 40*3_600_000,
+    locationName:'Puerto Madero', durationHours:24, solved:true
+  },
 ];
 
 // ── STATE ─────────────────────────────────────────────────────────
@@ -1136,6 +1231,7 @@ let activeFormType = 'ofrezco';
 let activeFormCat = 'producto';
 let allPosts = [...MOCK_POSTS];
 let countdownIntervals = [];
+let deferredPwaPrompt = null;
 
 // ── UTILS ─────────────────────────────────────────────────────────
 function sanitize(str) {
@@ -1166,8 +1262,10 @@ function computeRemaining(post) {
   return { percent: Math.min(100, pct), text, cls };
 }
 
-function isExpired(post) {
-  return post.solved || (Date.now() - new Date(post.createdAt).getTime() > post.durationHours * 3_600_000);
+function isClosed(post) {
+  if (post.solved) return true;
+  const elapsed = (Date.now() - new Date(post.createdAt).getTime()) / 3_600_000;
+  return elapsed >= post.durationHours;
 }
 
 // ── TOAST ─────────────────────────────────────────────────────────
@@ -1184,7 +1282,7 @@ function showToast(msg, type='info') {
 function initGoogleAuth() {
   if (!window.google) { setTimeout(initGoogleAuth, 150); return; }
   google.accounts.id.initialize({
-    client_id: '15579611596-cl542m98cnp2ti26ncotbifk2lbi3psn.apps.googleusercontent.com',
+    client_id: CONFIG.GOOGLE_CLIENT_ID,
     callback: onGoogleCredential,
     auto_select: false,
     cancel_on_tap_outside: true,
@@ -1259,26 +1357,16 @@ function updateUserUI() {
 
 // ── MAP ───────────────────────────────────────────────────────────
 function initMap() {
-  mapInstance = L.map('map', { zoomControl:false, attributionControl:false })
-    .setView([CONFIG.DEFAULT_LAT, CONFIG.DEFAULT_LNG], CONFIG.DEFAULT_ZOOM);
+  mapInstance = L.map('map', {
+    zoomControl: false,
+    attributionControl: false,
+  }).setView([CONFIG.DEFAULT_LAT, CONFIG.DEFAULT_LNG], CONFIG.DEFAULT_ZOOM);
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     maxZoom:19, minZoom:10
   }).addTo(mapInstance);
 
-  mapInstance.on('zoomend', syncZoomSlider);
-  syncZoomSlider();
   renderAllPosts();
-}
-
-function syncZoomSlider() {
-  if (!mapInstance) return;
-  const z = mapInstance.getZoom();
-  const slider = document.getElementById('zoomSlider');
-  const fill = document.getElementById('zoomFill');
-  slider.value = z;
-  const pct = ((z - CONFIG.MIN_ZOOM) / (CONFIG.MAX_ZOOM - CONFIG.MIN_ZOOM)) * 100;
-  fill.style.height = pct + '%';
 }
 
 function renderAllPosts() {
@@ -1288,16 +1376,16 @@ function renderAllPosts() {
 
   allPosts.forEach(post => {
     if (!post.lat || !post.lng) return;
-    const expired = isExpired(post);
+    const closed = isClosed(post);
     const emoji = post.type === 'ofrezco' ? '🙌' : '🤝';
-    const cls = expired ? 'cm-resolved' : (post.type === 'ofrezco' ? 'cm-ofrezco' : 'cm-necesito');
+    const cls = closed ? 'cm-resolved' : (post.type === 'ofrezco' ? 'cm-ofrezco' : 'cm-necesito');
     const iconHtml = `<div class="cm ${cls}">${emoji}</div>`;
     const icon = L.divIcon({ html:iconHtml, className:'custom-div-icon', iconSize:[38,38], popupAnchor:[0,-20] });
     const marker = L.marker([post.lat, post.lng], { icon });
 
     const rem = computeRemaining(post);
-    const typeBadgeClass = expired ? 'badge-resolved' : (post.type==='ofrezco' ? 'badge-ofrezco' : 'badge-necesito');
-    const typeText = expired ? '🔒 Cerrado' : (post.type==='ofrezco' ? '🙌 Ofrezco' : '🤝 Necesito');
+    const typeBadgeClass = closed ? 'badge-resolved' : (post.type==='ofrezco' ? 'badge-ofrezco' : 'badge-necesito');
+    const typeText = closed ? '🔒 Terminado' : (post.type==='ofrezco' ? '🙌 Ofrezco' : '🤝 Necesito');
     const catText = post.category==='producto' ? '📦 Producto' : '⚙️ Servicio';
 
     const popup = `
@@ -1311,7 +1399,7 @@ function renderAllPosts() {
           <span class="badge badge-cat">${catText}</span>
         </div>
         <div class="minicard-desc">${sanitize(post.description)}</div>
-        ${expired
+        ${closed
           ? `<div class="resolved-notice">✅ Caso finalizado</div>`
           : `<div class="mc-countdown">
               <div class="cbar"><div class="cbar-fill ${rem.cls}" style="width:${rem.percent}%"></div></div>
@@ -1334,18 +1422,33 @@ function renderAllPosts() {
   });
 }
 
+// Polling para detectar posts que caducan en tiempo real
+function startExpiryWatcher() {
+  setInterval(() => {
+    let changed = false;
+    allPosts.forEach(p => {
+      if (!p.solved && !p._expiredRendered && isClosed(p)) {
+        p._expiredRendered = true;
+        changed = true;
+      }
+    });
+    if (changed) renderAllPosts();
+  }, 60_000); // cada minuto
+}
+
 // ── DETAIL MODAL ──────────────────────────────────────────────────
 function openDetail(post) {
-  const expired = isExpired(post);
+  const closed = isClosed(post);
   const rem = computeRemaining(post);
+  // Cualquier usuario puede ver el detalle — solo contactar requiere login
   const isOwner = currentUser && post.userId === currentUser.id;
-  const typeBadgeClass = expired ? 'badge-resolved' : (post.type==='ofrezco' ? 'badge-ofrezco' : 'badge-necesito');
+  const typeBadgeClass = closed ? 'badge-resolved' : (post.type==='ofrezco' ? 'badge-ofrezco' : 'badge-necesito');
   const typeText = post.type==='ofrezco' ? '🙌 Ofrezco' : '🤝 Necesito';
   const catText = post.category==='producto' ? '📦 Producto' : '⚙️ Servicio';
   const dateStr = new Date(post.createdAt).toLocaleDateString('es-AR',{day:'numeric',month:'long'});
 
   let ctaHtml = '';
-  if (expired) {
+  if (closed) {
     ctaHtml = `<div class="resolved-notice">🔒 Esta publicación ya está cerrada o vencida</div>`;
   } else if (isOwner && post.phone) {
     ctaHtml = `<div class="own-phone-notice">📱 Tu número: +54 ${post.phone}<br><small style="font-weight:500;opacity:0.8">Así te contactarán quienes quieran ayudar</small></div>`;
@@ -1356,7 +1459,7 @@ function openDetail(post) {
     ctaHtml = `<div class="resolved-notice" style="background:var(--blue-xlight);color:var(--blue-dark);">ℹ️ El usuario no dejó teléfono de contacto</div>`;
   }
 
-  document.getElementById('detailTitle').textContent = expired ? 'Caso cerrado' : (post.type==='ofrezco' ? 'Ofrece ayuda' : 'Solicita ayuda');
+  document.getElementById('detailTitle').textContent = closed ? 'Caso cerrado' : (post.type==='ofrezco' ? 'Ofrece ayuda' : 'Solicita ayuda');
   document.getElementById('detailContent').innerHTML = `
     <div class="detail-hero">
       <img class="detail-photo" src="${post.userPhoto||''}" onerror="this.src='https://ui-avatars.com/api/?background=C4D0DC&color=fff&name=U&size=100'">
@@ -1370,7 +1473,7 @@ function openDetail(post) {
       <span class="badge badge-cat">${catText}</span>
     </div>
     <div class="detail-desc">${sanitize(post.description)}</div>
-    ${!expired ? `
+    ${!closed ? `
       <div class="detail-countdown">
         <div class="detail-cbar">
           <div class="detail-cbar-fill ${rem.cls}" id="detailCbar" style="width:${rem.percent}%"></div>
@@ -1381,8 +1484,7 @@ function openDetail(post) {
   `;
   document.getElementById('detailModal').classList.remove('hidden');
 
-  // Live countdown in detail
-  if (!expired) {
+  if (!closed) {
     const iv = setInterval(() => {
       const r = computeRemaining(post);
       const cbar = document.getElementById('detailCbar');
@@ -1391,7 +1493,7 @@ function openDetail(post) {
       cbar.style.width = r.percent+'%';
       cbar.className = `detail-cbar-fill ${r.cls}`;
       lbl.textContent = `⏳ ${r.text}`;
-      if (r.percent <= 0) clearInterval(iv);
+      if (r.percent <= 0) { clearInterval(iv); renderAllPosts(); }
     }, 30000);
     countdownIntervals.push(iv);
   }
@@ -1469,7 +1571,7 @@ async function publishPost() {
   btn.innerHTML = '<span class="spinner"></span> Publicando…';
   btn.disabled = true;
 
-  await new Promise(r => setTimeout(r, 600)); // simulate async
+  await new Promise(r => setTimeout(r, 600));
 
   const newPost = {
     id: 'p' + Date.now(),
@@ -1497,15 +1599,105 @@ async function publishPost() {
 }
 
 // ── CITY PICKER ───────────────────────────────────────────────────
-function toggleCityPicker() {
-  document.getElementById('cityPicker').classList.toggle('hidden');
-}
-
 function selectCity(lat, lng, name) {
   mapInstance.setView([lat, lng], 12);
   document.getElementById('cityLabel').textContent = name;
   document.getElementById('cityPicker').classList.add('hidden');
   document.querySelectorAll('.city-option').forEach(b => b.classList.remove('active'));
+}
+
+// ── PWA ───────────────────────────────────────────────────────────
+function initPWA() {
+  // Inyectar manifest dinámico
+  const manifest = {
+    name: 'Tu Mano a Uno',
+    short_name: 'Mano a Uno',
+    description: 'Conectate con personas que necesitan o pueden ofrecer ayuda en tu comunidad.',
+    start_url: '/',
+    display: 'standalone',
+    background_color: '#ffffff',
+    theme_color: '#5BABCC',
+    orientation: 'portrait',
+    icons: [
+      {
+        src: 'https://ui-avatars.com/api/?background=2C7DA0&color=fff&name=M&size=192&bold=true',
+        sizes: '192x192',
+        type: 'image/png'
+      },
+      {
+        src: 'https://ui-avatars.com/api/?background=2C7DA0&color=fff&name=M&size=512&bold=true',
+        sizes: '512x512',
+        type: 'image/png'
+      }
+    ]
+  };
+  const blob = new Blob([JSON.stringify(manifest)], { type:'application/json' });
+  const manifestUrl = URL.createObjectURL(blob);
+  document.getElementById('pwaManifest').href = manifestUrl;
+
+  // Service Worker inline
+  const swCode = `
+const CACHE = 'tmu-v1';
+const STATIC = ['/'];
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(STATIC).catch(()=>{})));
+  self.skipWaiting();
+});
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(keys =>
+    Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+  ));
+  self.clients.claim();
+});
+self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET') return;
+  e.respondWith(
+    fetch(e.request).catch(() => caches.match(e.request))
+  );
+});
+  `;
+  const swBlob = new Blob([swCode], { type:'application/javascript' });
+  const swUrl = URL.createObjectURL(swBlob);
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register(swUrl, { scope:'/' }).catch(()=>{});
+  }
+
+  // Banner de instalación (Android/Chrome)
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPwaPrompt = e;
+    const dismissed = sessionStorage.getItem('pwa_dismissed');
+    if (!dismissed) {
+      setTimeout(() => document.getElementById('pwaBanner').classList.remove('hidden'), 2000);
+    }
+  });
+
+  document.getElementById('pwaInstallBtn').onclick = async () => {
+    if (!deferredPwaPrompt) return;
+    deferredPwaPrompt.prompt();
+    const { outcome } = await deferredPwaPrompt.userChoice;
+    deferredPwaPrompt = null;
+    document.getElementById('pwaBanner').classList.add('hidden');
+    if (outcome === 'accepted') showToast('¡App instalada! 🎉', 'success');
+  };
+
+  document.getElementById('pwaDismissBtn').onclick = () => {
+    document.getElementById('pwaBanner').classList.add('hidden');
+    sessionStorage.setItem('pwa_dismissed', '1');
+  };
+
+  // iOS: mostrar instrucción manual si está en Safari y no está instalado
+  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = ('standalone' in navigator && navigator.standalone);
+  if (isIos && !isStandalone) {
+    const dismissed = sessionStorage.getItem('pwa_dismissed');
+    if (!dismissed) {
+      setTimeout(() => {
+        showToast('iOS: tocá el botón Compartir y luego "Agregar a pantalla de inicio" 📲', 'info');
+        sessionStorage.setItem('pwa_dismissed', '1');
+      }, 3000);
+    }
+  }
 }
 
 // ── EVENTS ────────────────────────────────────────────────────────
@@ -1583,12 +1775,8 @@ function bindEvents() {
     };
   });
 
-  // Zoom controls
-  document.getElementById('zoomInBtn').onclick = () => { mapInstance.zoomIn(); };
-  document.getElementById('zoomOutBtn').onclick = () => { mapInstance.zoomOut(); };
-  document.getElementById('zoomSlider').oninput = e => {
-    mapInstance.setZoom(parseInt(e.target.value));
-  };
+  // Pinch zoom prevention on map (iOS fix)
+  document.getElementById('map').addEventListener('gesturestart', e => e.preventDefault(), { passive:false });
 
   // Close modals on overlay click
   ['postModal','detailModal','donateModal'].forEach(id => {
@@ -1618,11 +1806,8 @@ window.addEventListener('load', () => {
   bindEvents();
   initGoogleAuth();
   initLocation();
-
-  // Service Worker
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').catch(()=>{});
-  }
+  initPWA();
+  startExpiryWatcher();
 });
 </script>
 </body>
