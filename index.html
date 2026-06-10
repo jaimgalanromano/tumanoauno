@@ -190,7 +190,6 @@
     .leaflet-control-attribution { display:none !important; }
     .leaflet-control-zoom { display:none !important; }
     .leaflet-container { cursor:default !important; }
-    /* Map loading indicator */
     .map-loading { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:5; background:white; border-radius:var(--radius-lg); padding:16px 24px; box-shadow:var(--shadow-lg); display:flex; align-items:center; gap:10px; font-weight:700; font-size:0.88rem; color:var(--gray-700); }
     .map-loading.hidden { display:none; }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
@@ -220,7 +219,6 @@
   <div class="map-wrap">
     <div id="map"></div>
 
-    <!-- Map loading -->
     <div class="map-loading" id="mapLoading">
       <div class="spinner" style="border-top-color:var(--blue-dark);border-color:var(--gray-300);"></div>
       Cargando publicaciones…
@@ -352,13 +350,12 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 /* ================================================================
-   TU MANO A UNO — App Script con integración real al backend
+   TU MANO A UNO — App Script v2 (fix coordenadas + fechas)
 ================================================================ */
 
 const CONFIG = {
   GOOGLE_CLIENT_ID: '15579611596-cl542m98cnp2ti26ncotbifk2lbi3psn.apps.googleusercontent.com',
-  // ⚠️ IMPORTANTE: reemplazá esto con tu URL de Apps Script desplegado
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzK6-6H9_HiTxH7w7JB_3Cn9NNNaZK7RG-8qw3DLGhJlzEWd5rDoESw1ziVJuUnJY0Q/exec',
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbz4QCxCAp2FY-HMQOHtkzdfPdHpenXj5qe0aFRvRbjAeCyJHJGiUu9CnH_2HHLsDXZE/exec',
   APP_NAME: 'Tu Mano a Uno',
   CVU: '0000003100040849915686',
   CARD_DURATION_HOURS: 24,
@@ -397,6 +394,17 @@ function parseJwt(token) {
   } catch { return null; }
 }
 
+// FIX: corregir coordenadas que Sheets convirtió a entero largo sin punto decimal
+// Ej: -3458797274202780 → -34.5879727420278
+function fixCoord(val, intDigits) {
+  const s = String(val).replace('-', '');
+  if (s.includes('.')) return parseFloat(val); // ya tiene punto decimal, ok
+  if (s.length <= intDigits) return parseFloat(val); // número corto, ok
+  const neg = String(val).startsWith('-');
+  const fixed = s.slice(0, intDigits) + '.' + s.slice(intDigits);
+  return parseFloat((neg ? '-' : '') + fixed);
+}
+
 function computeRemaining(post) {
   if (post.solved) return { percent:0, text:'Resuelto', cls:'' };
   const elapsed = (Date.now() - new Date(post.createdAt).getTime()) / 3_600_000;
@@ -427,10 +435,7 @@ function showToast(msg, type='info') {
 }
 
 // ── BACKEND API ───────────────────────────────────────────────────
-// Usa fetch con JSONP fallback para evitar problemas de CORS con Apps Script
-async function apiCall(params) {
-  // Apps Script con CORS requiere usar no-cors o JSONP
-  // Usamos el truco de iframe/script para JSONP
+function apiCall(params) {
   return new Promise((resolve, reject) => {
     const callbackName = 'tmu_cb_' + Date.now();
     const url = new URL(CONFIG.APPS_SCRIPT_URL);
@@ -461,18 +466,16 @@ async function apiCall(params) {
   });
 }
 
-async function apiPost(data) {
-  // Para POST usamos fetch con mode no-cors (no vemos respuesta)
-  // Alternativa: convertir a GET con parámetros
+function apiPost(data) {
   const url = new URL(CONFIG.APPS_SCRIPT_URL);
   Object.entries(data).forEach(([k,v]) => {
     if (v !== undefined && v !== null) url.searchParams.set(k, String(v));
   });
-  
+
   return new Promise((resolve, reject) => {
     const callbackName = 'tmu_post_cb_' + Date.now();
     url.searchParams.set('callback', callbackName);
-    
+
     window[callbackName] = (responseData) => {
       delete window[callbackName];
       script.remove();
@@ -505,9 +508,10 @@ async function loadPostsFromBackend() {
     if (result && result.success && Array.isArray(result.posts)) {
       allPosts = result.posts.map(p => ({
         ...p,
-        lat: parseFloat(p.lat),
-        lng: parseFloat(p.lng),
-        createdAt: p.createdAt ? new Date(p.createdAt).getTime() : Date.now(),
+        // FIX: usar fixCoord para corregir coordenadas sin punto decimal
+        lat: fixCoord(p.lat, 2),
+        lng: fixCoord(p.lng, 3),
+        createdAt: p.createdAt || new Date().toISOString(),
         durationHours: parseInt(p.durationHours) || 24,
         solved: p.solved === true || p.solved === 'true',
       }));
@@ -621,7 +625,9 @@ function renderAllPosts() {
   markersLayer = [];
 
   allPosts.forEach(post => {
-    if (!post.lat || !post.lng) return;
+    // FIX: verificar que lat/lng sean números válidos antes de agregar al mapa
+    if (!post.lat || !post.lng || isNaN(post.lat) || isNaN(post.lng)) return;
+
     const closed = isClosed(post);
     const emoji = post.type === 'ofrezco' ? '🙌' : '🤝';
     const cls = closed ? 'cm-resolved' : (post.type === 'ofrezco' ? 'cm-ofrezco' : 'cm-necesito');
@@ -834,11 +840,10 @@ async function publishPost() {
     const result = await apiPost(postData);
 
     if (result && result.success) {
-      // Agregar el post localmente con los datos que devuelve el servidor
       const newPost = {
         ...(result.post || postData),
         id: result.post?.id || ('local_' + Date.now()),
-        createdAt: result.post?.createdAt ? new Date(result.post.createdAt).getTime() : Date.now(),
+        createdAt: result.post?.createdAt || new Date().toISOString(),
         durationHours: 24,
         solved: false,
         lat: currentFormLocation.lat,
@@ -1017,7 +1022,7 @@ window.addEventListener('load', () => {
   initLocation();
   initPWA();
   startExpiryWatcher();
-  loadPostsFromBackend();  // ← carga real desde Google Sheets
+  loadPostsFromBackend();
 });
 </script>
 </body>
