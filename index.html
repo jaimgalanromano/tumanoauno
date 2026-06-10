@@ -286,7 +286,7 @@
         <div style="text-align:right;font-size:0.7rem;color:var(--gray-500);margin-top:3px;" id="descCounter">0 / 300</div>
       </div>
       <div class="form-row">
-        <label class="form-label" for="postPhone">WhatsApp (sin 0 ni 15)</label>
+        <label class="form-label" for="postPhone">WhatsApp (sin 0 ni 15) <span style="color:var(--red)">*</span></label>
         <div class="phone-wrap">
           <div class="phone-prefix">+54</div>
           <input type="tel" id="postPhone" class="form-field" placeholder="1137881082" maxlength="12">
@@ -355,7 +355,7 @@
 
 const CONFIG = {
   GOOGLE_CLIENT_ID: '15579611596-cl542m98cnp2ti26ncotbifk2lbi3psn.apps.googleusercontent.com',
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyOUDN3FWtAroXHpzhxv83m8i3KdXBKF_OEBA-CMR4LI9wTLli7FeT2aR8uAhrTQs52/exec',
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzELkLs2ncaQ0mnEb2a3iCX2oqOLmiw6afY5SWVk4k-YYxnTs-sNRB-X2Ypo76R04s/exec',
   APP_NAME: 'Tu Mano a Uno',
   CVU: '0000003100040849915686',
   CARD_DURATION_HOURS: 24,
@@ -816,6 +816,7 @@ async function publishPost() {
   const desc = document.getElementById('postDesc').value.trim();
   const phone = document.getElementById('postPhone').value.replace(/\D/g,'');
   if (desc.length < 5) { showToast('Descripción muy corta (mínimo 5 caracteres)', 'error'); return; }
+if (!phone || phone.length < 7) { showToast('El número de WhatsApp es obligatorio', 'error'); return; }
 
   const btn = document.getElementById('publishBtn');
   btn.innerHTML = '<span class="spinner"></span> Publicando…';
